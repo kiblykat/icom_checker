@@ -3,6 +3,7 @@ REM start logFile
 set logFile=logFile.txt
 
 echo Script started at %date% %time% >> %logFile%
+
 setlocal enabledelayedexpansion
 
 REM need to further streamline, just prompt AC folder. the relative folder to toFGC and toFAC can be hardcoded
@@ -18,7 +19,7 @@ set "line2="
 REM Find the line containing the search word/phrase in AC
 for /f "tokens=*" %%a in ('type "%file_AC%" ^| find /n "%search_word%"') do (
     set "line1=%%a"
-    set "line1=!line1:*] =!"
+    set "line1=!line1:*] =!" 
     echo "AC: !line1!"
     goto :found1
 )
@@ -38,20 +39,21 @@ for /f "tokens=*" %%a in ('type "%file_GC%" ^| find /n "%search_word%"') do (
 REM Compare the two lines
 if not defined line1 (
     if not defined line2 (
-        echo "INTEFACEID" found in either file.
+        echo "INTEFACEID" not found in either file.
     ) else (
-        echo "INTEFACEID" was not found in %file_AC%.
+        echo "INTEFACEID" not found in %file_AC%.
     )
 ) else if not defined line2 (
-    echo "INTEFACEID" was not found in %file_GC%.
+    echo "INTEFACEID" not found in %file_GC%.
 ) else (
     if "!line1!"=="!line2!" (
         echo Your folders are synced. Congratulations
+        echo Script finished at %date% %time%
         exit /b
     ) else (
         echo Your folders are not synced. Proceeding with ICOM build syncing...
         timeout /t 1 >nul
-        echo Please ensure clean project folders before running ICOM sync
+        echo Please gitclean project folders before running ICOM sync
         timeout /t 2 >nul
         goto :proceedWithBuild
     )
@@ -68,33 +70,38 @@ REM set /p ACorGC=Choose which system to run first:
 REM find total time required to do whole ICOM sync
 
 REM ---RUN AC BUILD--- 
-echo running AC batch file %buildAC%
-echo running in 5 seconds
+echo running AC batch file: %buildAC%
 timeout /t 5
 call "%buildFolderAC%\%buildAC%.bat"
-echo finish running batch file
+echo SUCCESS: Successfully run AC project build
 
 REM ---COPY AC TO GC FOLDER---
 echo copying files from AC to GC
 xcopy "%buildFolderAC%\toFGC" "%buildFolderGC%\copyAChere" /E /I /H /Y
+echo SUCCESS: copied files from AC to GC
+timeout /t 2
 
 REM ---RUN GC BUILD--- 
-echo running AC batch file %buildGC%
+echo running GC batch file: %buildGC%
 timeout /t 5
 call "%buildFolderGC%\%buildGC%.bat"
-echo finish running batch file
+echo SUCCESS: Successfully run GC project build
 
 REM ---COPY GC TO AC FOLDER---
 echo copying files from GC to AC
 xcopy "%buildFolderGC%\toFAC" "%buildFolderAC%\copyGChere" /E /I /H /Y
+echo SUCCESS: copied files from GC to AC
+timeout /t 2
 
 REM ---RUN AC BUILD--- 
-echo running AC batch file %buildAC%
 timeout /t 5
+echo Please gitclean project folders before running ICOM sync
+echo running AC batch file %buildAC%
 call "%buildFolderAC%\%buildAC%"
-echo finish running batch file
+echo SUCCESS: Successfully run AC project build
 
 endlocal
 
 REM end logFile
 echo Script finished at %date% %time% >> %logFile%
+exit /b
