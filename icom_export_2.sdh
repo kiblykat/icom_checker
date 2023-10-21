@@ -1,0 +1,11 @@
+// ICOM Settings
+//------------------------------------------------------------------------------
+ICOM DEFINE REMOTE CHANNEL IPC_CAN
+ ENDIANESS LITTLE
+ TXBUFFERSIZE 2048
+ MAXTXDATA 20
+ TXLIMIT 1500
+ INTERFACEID 0x7DA4FE5D
+ CHECKSUMSIZE 1
+ ;
+
