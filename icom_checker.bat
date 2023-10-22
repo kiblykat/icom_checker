@@ -39,12 +39,12 @@ for /f "tokens=*" %%a in ('type "%file_GC%" ^| find /n "%search_word%"') do (
 REM Compare the two lines
 if not defined line1 (
     if not defined line2 (
-        echo "INTEFACEID" not found in either file.
+        echo "INTERFACEID" not found in either file.
     ) else (
-        echo "INTEFACEID" not found in %file_AC%.
+        echo "INTERFACEID" not found in %file_AC%.
     )
 ) else if not defined line2 (
-    echo "INTEFACEID" not found in %file_GC%.
+    echo "INTERFACEID" not found in %file_GC%.
 ) else (
     if "!line1!"=="!line2!" (
         echo Your folders are synced. Congratulations
@@ -100,8 +100,53 @@ echo running AC batch file %buildAC%
 call "%buildFolderAC%\%buildAC%"
 echo SUCCESS: Successfully run AC project build
 
+REM ---DO FINAL CHECK IF ICOM IS SYNCED---
+REM Find the line containing the search word/phrase in AC
+for /f "tokens=*" %%a in ('type "%file_AC%" ^| find /n "%search_word%"') do (
+    set "line1=%%a"
+    set "line1=!line1:*] =!" 
+    echo "AC: !line1!"
+    goto :found3
+)
+
+:found3
+
+REM Find the line containing the search word/phrase in GC
+for /f "tokens=*" %%a in ('type "%file_GC%" ^| find /n "%search_word%"') do (
+    set "line2=%%a"
+    set "line2=!line2:*] =!"
+    echo "GC: !line2!"
+    goto :found4
+)
+
+:found4
+
+REM Compare the two lines
+if not defined line1 (
+    if not defined line2 (
+        echo "INTERFACEID" not found in either file.
+    ) else (
+        echo "INTERFACEID" not found in %file_AC%.
+    )
+) else if not defined line2 (
+    echo "INTERFACEID" not found in %file_GC%.
+) else (
+    if "!line1!"=="!line2!" (
+        echo Your folders are synced. Congratulations
+        echo Script finished at %date% %time%
+        exit /b
+    ) else (
+        echo Your folders are not synced. Proceeding with ICOM build syncing...
+        timeout /t 1 >nul
+        echo Please gitclean project folders before running ICOM sync
+        timeout /t 2 >nul
+        goto :proceedWithBuild
+    )
+)
 endlocal
 
 REM end logFile
 echo Script finished at %date% %time% >> %logFile%
 exit /b
+
+REM todo: ensure no new folders are made by accident (check the flags in xcopy)
