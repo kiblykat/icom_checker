@@ -9,8 +9,8 @@ setlocal enabledelayedexpansion
 REM need to further streamline, just prompt AC folder. the relative folder to toFGC and toFAC can be hardcoded
 set /p buildFolderAC=Choose build folder for AC:
 set /p buildFolderGC=Choose build folder for GC:
-set "file_AC=%buildFolderAC%\icom_export.sdh" 
-set "file_GC=%buildFolderGC%\icom_export_2.sdh"
+set "file_AC=%buildFolderAC%\core\pkg\icom\icom_export.sdh" 
+set "file_GC=%buildFolderGC%\adapt\gen\tofac\core\pkg\icom\icom_export.sdh"
 set "search_word=INTERFACEID"
 
 set "line1="
@@ -39,12 +39,12 @@ for /f "tokens=*" %%a in ('type "%file_GC%" ^| find /n "%search_word%"') do (
 REM Compare the two lines
 if not defined line1 (
     if not defined line2 (
-        echo "INTEFACEID" not found in either file.
+        echo "INTERFACEID" not found in either file.
     ) else (
-        echo "INTEFACEID" not found in %file_AC%.
+        echo "INTERFACEID" not found in %file_AC%.
     )
 ) else if not defined line2 (
-    echo "INTEFACEID" not found in %file_GC%.
+    echo "INTERFACEID" not found in %file_GC%.
 ) else (
     if "!line1!"=="!line2!" (
         echo Your folders are synced. Congratulations
@@ -77,7 +77,7 @@ echo SUCCESS: Successfully run AC project build
 
 REM ---COPY AC TO GC FOLDER---
 echo copying files from AC to GC
-xcopy "%buildFolderAC%\toFGC" "%buildFolderGC%\copyAChere" /E /I /H /Y
+xcopy "%buildFolderAC%\adapt\gen\ToFGC\core\pkg" "%buildFolderGC%\core\pkg" /E /I /H /Y
 echo SUCCESS: copied files from AC to GC
 timeout /t 2
 
@@ -89,7 +89,7 @@ echo SUCCESS: Successfully run GC project build
 
 REM ---COPY GC TO AC FOLDER---
 echo copying files from GC to AC
-xcopy "%buildFolderGC%\toFAC" "%buildFolderAC%\copyGChere" /E /I /H /Y
+xcopy "%buildFolderGC%\adapt\gen\tofac\core\pkg" "%buildFolderAC%\core\pkg" /E /I /H /Y
 echo SUCCESS: copied files from GC to AC
 timeout /t 2
 
