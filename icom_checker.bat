@@ -17,7 +17,7 @@ set "line1="
 set "line2="
 
 REM Find the line containing the search word/phrase in AC
-for /f "tokens=*" %%a in ('type "%file_AC%" ^| find /n "%search_word%"') do (
+for /f "tokens=*" %%a in ('type "%file_AC%" ^| findstr "%search_word%"') do (
     set "line1=%%a"
     set "line1=!line1:*] =!" 
     echo "AC: !line1!"
@@ -27,7 +27,7 @@ for /f "tokens=*" %%a in ('type "%file_AC%" ^| find /n "%search_word%"') do (
 :found1
 
 REM Find the line containing the search word/phrase in GC
-for /f "tokens=*" %%a in ('type "%file_GC%" ^| find /n "%search_word%"') do (
+for /f "tokens=*" %%a in ('type "%file_GC%" ^| find "%search_word%"') do (
     set "line2=%%a"
     set "line2=!line2:*] =!"
     echo "GC: !line2!"
@@ -52,9 +52,9 @@ if not defined line1 (
         exit /b
     ) else (
         echo Your folders are not synced. Proceeding with ICOM build syncing...
-        timeout /t 1 >nul
-        echo Please gitclean project folders before running ICOM sync
         timeout /t 2 >nul
+        echo Please gitclean project folders before running ICOM sync
+        timeout /t 5
         goto :proceedWithBuild
     )
 )
@@ -62,8 +62,24 @@ if not defined line1 (
 
 :proceedWithBuild
 REM can be made more streamlined. For now this works as MVP :)
+:retryA
 set /p buildAC=Choose build variant for AC:
+IF EXIST "%buildAC%" (
+    echo You have chosen: %buildAC%
+) else (
+    echo Batch file not found.
+	goto retryA
+)
+
+
+:retryB
 set /p buildGC=Choose build variant for GC:
+IF EXIST "%buildGC%" (
+    echo You have chosen: %buildGC%
+) else (
+    echo Batch file not found.
+	goto retryB
+)
 
 REM ---------- KIV ----------------
 REM set /p ACorGC=Choose which system to run first: 
