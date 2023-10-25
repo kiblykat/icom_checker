@@ -104,6 +104,7 @@ echo running AC batch file: %buildAC%
 echo "%buildFolderAC%\%buildAC%.bat"
 REM enter project folder due to relative path within build batch
 cd "%buildFolderAC%\%buildAC%"
+echo Current folder: %CD%
 
 timeout /t 5
 CALL "%buildFolderAC%\%buildAC%.bat"
@@ -120,6 +121,7 @@ echo running GC batch file: %buildGC%
 echo "%buildFolderGC%\%buildGC%.bat"
 REM enter project folder due to relative path within build batch
 cd "%buildFolderGC%\%buildGC%"
+echo Current folder: %CD%
 
 timeout /t 5
 CALL "%buildFolderGC%\%buildGC%.bat"
@@ -136,6 +138,7 @@ echo running AC batch file: %buildAC%
 echo "%buildFolderAC%\%buildAC%.bat"
 REM enter project folder due to relative path within build batch
 cd "%buildFolderAC%\%buildAC%"
+echo Current folder: %CD%
 
 timeout /t 5
 CALL "%buildFolderAC%\%buildAC%.bat"
