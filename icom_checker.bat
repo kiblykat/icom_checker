@@ -103,12 +103,13 @@ REM ---RUN AC BUILD---
 echo running AC batch file: %buildAC%
 echo "%buildFolderAC%\%buildAC%.bat"
 REM enter project folder due to relative path within build batch
-cd "%buildFolderAC%\%buildAC%"
+pushd %buildFolderAC%
 echo Current folder: %CD%
 
 timeout /t 5
 CALL "%buildFolderAC%\%buildAC%.bat"
 echo SUCCESS: Successfully run AC project build
+popd
 
 REM ---COPY AC TO GC FOLDER---
 echo copying files from AC to GC
@@ -120,12 +121,13 @@ REM ---RUN GC BUILD---
 echo running GC batch file: %buildGC%
 echo "%buildFolderGC%\%buildGC%.bat"
 REM enter project folder due to relative path within build batch
-cd "%buildFolderGC%\%buildGC%"
+pushd "%buildFolderGC%"
 echo Current folder: %CD%
 
 timeout /t 5
 CALL "%buildFolderGC%\%buildGC%.bat"
 echo SUCCESS: Successfully run GC project build
+popd
 
 REM ---COPY GC TO AC FOLDER---
 echo copying files from GC to AC
@@ -137,13 +139,13 @@ REM ---RUN AC BUILD---
 echo running AC batch file: %buildAC%
 echo "%buildFolderAC%\%buildAC%.bat"
 REM enter project folder due to relative path within build batch
-cd "%buildFolderAC%\%buildAC%"
+pushd "%buildFolderAC%"
 echo Current folder: %CD%
 
 timeout /t 5
 CALL "%buildFolderAC%\%buildAC%.bat"
 echo SUCCESS: Successfully run AC project build
-
+popd
 
 REM ---AC: GET_PRG, GET_SYM---
 echo AC: Running get_prg and get_sym
