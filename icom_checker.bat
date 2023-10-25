@@ -1,5 +1,6 @@
 @echo off
 REM start logFile
+
 set logFile=logFile.txt
 
 echo Script started at %date% %time% >> %logFile%
@@ -18,7 +19,7 @@ IF NOT EXIST "%buildFolderAC%" (
 set /p buildFolderGC=Choose build folder for GC:
 IF NOT EXIST "%buildFolderGC%" (
     echo GC Project Folder not found. Please check misspelling.
-	goto retryFolderAC
+	goto retryFolderGC
 )
 
 set "file_AC=%buildFolderAC%\core\pkg\icom\icom_export.sdh" 
@@ -100,8 +101,12 @@ REM find total time required to do whole ICOM sync
 
 REM ---RUN AC BUILD--- 
 echo running AC batch file: %buildAC%
+echo "%buildFolderAC%\%buildAC%.bat"
+REM enter project folder due to relative path within build batch
+cd "%buildFolderAC%\%buildAC%"
+
 timeout /t 5
-call "%buildFolderAC%\%buildAC%.bat"
+CALL "%buildFolderAC%\%buildAC%.bat"
 echo SUCCESS: Successfully run AC project build
 
 REM ---COPY AC TO GC FOLDER---
@@ -112,8 +117,12 @@ timeout /t 2
 
 REM ---RUN GC BUILD--- 
 echo running GC batch file: %buildGC%
+echo "%buildFolderGC%\%buildGC%.bat"
+REM enter project folder due to relative path within build batch
+cd "%buildFolderGC%\%buildGC%"
+
 timeout /t 5
-call "%buildFolderGC%\%buildGC%.bat"
+CALL "%buildFolderGC%\%buildGC%.bat"
 echo SUCCESS: Successfully run GC project build
 
 REM ---COPY GC TO AC FOLDER---
@@ -123,10 +132,13 @@ echo SUCCESS: copied files from GC to AC
 timeout /t 2
 
 REM ---RUN AC BUILD--- 
+echo running AC batch file: %buildAC%
+echo "%buildFolderAC%\%buildAC%.bat"
+REM enter project folder due to relative path within build batch
+cd "%buildFolderAC%\%buildAC%"
+
 timeout /t 5
-echo Please gitclean project folders before running ICOM sync
-echo running AC batch file %buildAC%
-call "%buildFolderAC%\%buildAC%"
+CALL "%buildFolderAC%\%buildAC%.bat"
 echo SUCCESS: Successfully run AC project build
 
 
