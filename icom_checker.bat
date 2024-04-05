@@ -12,14 +12,14 @@ REM need to further streamline, just prompt AC/GC folder. the relative folder to
 set /p buildFolderAC=Choose build folder for AC:
 IF NOT EXIST "%buildFolderAC%" (
     echo AC Project Folder not found. Please check misspelling.
-	goto retryFolderAC
+	goto :retryFolderAC
 )
 
 :retryFolderGC
 set /p buildFolderGC=Choose build folder for GC:
 IF NOT EXIST "%buildFolderGC%" (
     echo GC Project Folder not found. Please check misspelling.
-	goto retryFolderGC
+	goto :retryFolderGC
 )
 
 set "file_AC=%buildFolderAC%\core\pkg\icom\icom_export.sdh" 
@@ -59,10 +59,18 @@ if not defined line1 (
 ) else (
     if "!line1!"=="!line2!" (
         echo Your folders are synced. Congratulations
-        echo Script finished at %date% %time%
-        echo Press any key to continue...
-        pause > nul
-        exit /b
+        :retryContinueSync
+        set /p continueSync=Do you still want to proceed with sync? y/n 
+        if /i "%continueSync%" == "y" (
+            goto :proceedWithBuild  
+        ) else if /i "%continueSync%" == "n" (
+            echo Script finished at %date% %time%
+            echo Press any key to continue...
+            pause > nul
+            exit /b
+        ) else (
+            goto :retryContinueSync
+        )
     ) else (
         echo Your folders are not synced. Proceeding with ICOM build syncing...
         timeout /t 2 >nul
@@ -81,7 +89,7 @@ IF EXIST "%buildFolderAC%\%buildAC%.bat" (
 ) else (
     echo Batch file not found.
     echo Your chosen directory: "%buildFolderAC%\%buildAC%.bat"
-	goto retryBuildAC
+	goto :retryBuildAC
 )
 
 
@@ -92,7 +100,7 @@ IF EXIST "%buildFolderGC%\%buildGC%.bat" (
 ) else (
     echo Batch file not found.
     echo Your chosen directory: "%buildFolderGC%\%buildGC%.bat"
-	goto retryBuildGC
+	goto :retryBuildGC
 )
 
 REM ---------- KIV ----------------
@@ -159,6 +167,7 @@ CALL %buildFolderGC%\tool\integration\tool\deliver\core\get_sym.bat
 
 endlocal
 
+:end
 REM end logFile
 echo Script finished at %date% %time% >> %logFile%
 echo Press any key to continue...
