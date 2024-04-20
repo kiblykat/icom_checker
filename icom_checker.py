@@ -77,9 +77,9 @@ build_GC = input("Choose build variant for GC: ")
 # Run AC build
 print("Running AC batch file:", build_AC)
 os.chdir(build_folder_AC)
-subprocess.call([build_AC + ".bat"])
+subprocess.run([build_AC + ".bat"])
 
-# Copy files from AC to GC folder
+# Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
 print("Copying files from AC to GC")
 shutil.copytree(os.path.join(build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
                 os.path.join(build_folder_GC, "core", "pkg"),
@@ -88,7 +88,7 @@ shutil.copytree(os.path.join(build_folder_AC, "adapt", "gen", "ToFGC", "core", "
 # Run GC build
 print("Running GC batch file:", build_GC)
 os.chdir(build_folder_GC)
-subprocess.call([build_GC + ".bat"])
+subprocess.run([build_GC + ".bat"])
 
 # Copy files from GC to AC folder
 print("Copying files from GC to AC")
@@ -99,17 +99,17 @@ shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "
 # Run AC build again
 print("Running AC batch file again:", build_AC)
 os.chdir(build_folder_AC)
-subprocess.call([build_AC + ".bat"])
+subprocess.run([build_AC + ".bat"])
 
 # Run get_prg and get_sym for AC
 print("AC: Running get_prg and get_sym")
-subprocess.call([os.path.join(build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
-subprocess.call([os.path.join(build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
+subprocess.run([os.path.join(build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
+subprocess.run([os.path.join(build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
 
 # Run get_prg and get_sym for GC
 print("GC: Running get_prg and get_sym")
-subprocess.call([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
-subprocess.call([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
+subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
+subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
 
 # End log file
 with open(log_file, "a") as f:
