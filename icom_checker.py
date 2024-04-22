@@ -81,12 +81,15 @@ subprocess.run([build_AC + ".bat"])
 
 # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
 print("Copying files from AC to GC")
-shutil.copytree(os.path.join(build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
-                os.path.join(build_folder_GC, "core", "pkg"),
+time.sleep(2) #to comment
+parent_directory = os.path.dirname(os.getcwd())
+shutil.copytree(os.path.join(parent_directory, build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
+                os.path.join(parent_directory, build_folder_GC, "core", "pkg"),
                 dirs_exist_ok=True)
 
 # Run GC build
 print("Running GC batch file:", build_GC)
+print("CURRENT DIR" + os.getcwd())
 os.chdir(build_folder_GC)
 subprocess.run([build_GC + ".bat"])
 

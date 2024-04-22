@@ -41,7 +41,7 @@ for /f "tokens=*" %%a in ('type "%file_AC%" ^| findstr "%search_word%"') do (
 REM Find the line containing the search word/phrase in GC
 for /f "tokens=*" %%a in ('type "%file_GC%" ^| find "%search_word%"') do (
     set "line2=%%a"
-    echo "GC: !line2!"
+    echo "GCToFac: !line2!"
     goto :found2
 )
 
@@ -58,6 +58,11 @@ if not defined line1 (
     echo "INTERFACEID" not found in %file_GC%.
 ) else (
     if "!line1!"=="!line2!" (
+        echo "!line1! == !line2!"
+    )else(
+            if "!line3!"=="!line4!" (
+      echo Lines 3 and 4 are equal.
+    )
         echo Your folders are synced. Congratulations
         :retryContinueSync
         set /p continueSync=Do you still want to proceed with sync? y/n 
