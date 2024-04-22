@@ -12,7 +12,7 @@ def select_folder(prompt_message):
         if os.path.exists(folder_path):
             return folder_path
         else:
-            print("Project folder not found. Please check spelling.")
+            print("🔴 Project folder not found. Please check spelling.")
 
 # Function to find line containing search word
 def find_line(file_path):
@@ -31,8 +31,8 @@ with open(log_file, "a") as f:
 
 
 # Prompt user for AC and GC folders
-build_folder_AC = select_folder("Choose build folder for AC: ")
-build_folder_GC = select_folder("Choose build folder for GC: ")
+build_folder_AC = select_folder("⏩ Choose build folder for AC: ")
+build_folder_GC = select_folder("⏩ Choose build folder for GC: ")
 
 # Set file paths
 file_AC = os.path.join(build_folder_AC, "core", "pkg", "icom", "icom_export.sdh")
@@ -75,42 +75,44 @@ build_AC = input("Choose build variant for AC: ")
 build_GC = input("Choose build variant for GC: ")
 
 # Run AC build
-print("Running AC batch file:", build_AC)
+print("🟢 Running AC batch file:", build_AC)
 os.chdir(build_folder_AC)
 subprocess.run([build_AC + ".bat"])
 
 # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
-print("Copying files from AC to GC")
+print("🟢 Copying files from AC to GC")
 time.sleep(2) #to comment
-parent_directory = os.path.dirname(os.getcwd())
-shutil.copytree(os.path.join(parent_directory, build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
-                os.path.join(parent_directory, build_folder_GC, "core", "pkg"),
+os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
+shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
+                os.path.join(os.getcwd(), build_folder_GC, "core", "pkg"),
                 dirs_exist_ok=True)
 
 # Run GC build
-print("Running GC batch file:", build_GC)
+print("🟢 Running GC batch file:", build_GC)
 print("CURRENT DIR" + os.getcwd())
 os.chdir(build_folder_GC)
 subprocess.run([build_GC + ".bat"])
 
 # Copy files from GC to AC folder
-print("Copying files from GC to AC")
+print("🟢 Copying files from GC to AC")
+os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
 shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "pkg"),
                 os.path.join(build_folder_AC, "core", "pkg"),
                 dirs_exist_ok=True)
 
 # Run AC build again
-print("Running AC batch file again:", build_AC)
+print("🟢 Running AC batch file again:", build_AC)
 os.chdir(build_folder_AC)
 subprocess.run([build_AC + ".bat"])
 
 # Run get_prg and get_sym for AC
-print("AC: Running get_prg and get_sym")
-subprocess.run([os.path.join(build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
-subprocess.run([os.path.join(build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
+os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
+print("🟢 AC: Running get_prg and get_sym")
+subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
+subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
 
 # Run get_prg and get_sym for GC
-print("GC: Running get_prg and get_sym")
+print("🟢 GC: Running get_prg and get_sym")
 subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
 subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
 
