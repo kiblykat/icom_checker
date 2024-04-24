@@ -13,7 +13,7 @@ main_directory = os.getcwd()
 def select_entry(prompt_message):
     while True:
         folder_path = input(prompt_message)
-        if os.path.exists(folder_path) | os.path.exists(folder_path + ".bat") :
+        if os.path.exists(folder_path) or os.path.exists(folder_path + ".bat") :
             return folder_path
         else:
             print("🔴 File/Folder not found. Please check spelling.")
@@ -70,6 +70,12 @@ def build(build_batch_file,build_folder):
     subprocess.run([build_batch_file + ".bat"])
     return
 
+def choose_sequence():
+    while True:
+        first_folder = input("⏩ Choose which folder to build first: ").upper()
+        if (first_folder == "AC" or first_folder == "GC"):
+            return first_folder
+        print("🔴 Please inpit a valid folder")
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = START OF CODE FLOW  = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -111,43 +117,86 @@ build_AC_batch = select_entry("⏩ Choose build variant for AC: ")
 os.chdir(main_directory + "/GC")
 build_GC_batch = select_entry("⏩ Choose build variant for GC: ")
 
-# Run AC build
-os.chdir(main_directory)
-build(build_AC_batch,build_folder_AC)
+# Choose which folder to build first
+if(choose_sequence() == "AC"): # AC build first
+    # Run AC build
+    os.chdir(main_directory)
+    build(build_AC_batch,build_folder_AC)
 
-# Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
-print("🟢 Copying files from AC to GC")
-time.sleep(2) #for debugging
-os.chdir(main_directory) # return to parent dir
-shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
-                os.path.join(os.getcwd(), build_folder_GC, "core", "pkg"),
-                dirs_exist_ok=True)
+    # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
+    print("🟢 Copying files from AC to GC")
+    time.sleep(2) #for debugging
+    os.chdir(main_directory) # return to parent dir
+    shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
+                    os.path.join(os.getcwd(), build_folder_GC, "core", "pkg"),
+                    dirs_exist_ok=True)
 
-# Run GC build
-build(build_GC_batch,build_folder_GC)
+    # Run GC build
+    build(build_GC_batch,build_folder_GC)
 
-# Copy files from GC to AC folder
-print("🟢 Copying files from GC to AC")
-os.chdir(main_directory) # return to parent dir
-shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "pkg"),
-                os.path.join(build_folder_AC, "core", "pkg"),
-                dirs_exist_ok=True)
+    # Copy files from GC to AC folder
+    print("🟢 Copying files from GC to AC")
+    os.chdir(main_directory) # return to parent dir
+    shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "pkg"),
+                    os.path.join(build_folder_AC, "core", "pkg"),
+                    dirs_exist_ok=True)
 
-# Run AC build again
-build(build_AC_batch,build_folder_AC)
+    # Run AC build again
+    build(build_AC_batch,build_folder_AC)
 
-# Run get_prg and get_sym for AC
-os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
-print("🟢 AC: Running get_prg and get_sym")
-subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
-subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
+    # Run get_prg and get_sym for AC
+    os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
+    print("🟢 AC: Running get_prg and get_sym")
+    subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
+    subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
 
-# Run get_prg and get_sym for GC
-print("🟢 GC: Running get_prg and get_sym")
-subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
-subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
+    # Run get_prg and get_sym for GC
+    print("🟢 GC: Running get_prg and get_sym")
+    subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
+    subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
 
-# End log file
-with open(log_file, "a") as f:
-    f.write(f"Script finished at {time.strftime('%x %X')}\n")
-input("Press Enter to continue...")
+    # End log file
+    with open(log_file, "a") as f:
+        f.write(f"Script finished at {time.strftime('%x %X')}\n")
+    input("Press Enter to continue...")
+else: #GC build first
+    os.chdir(main_directory)
+    # Run GC build
+    build(build_GC_batch,build_folder_GC)
+
+    # Copy files from GC to AC folder
+    print("🟢 Copying files from GC to AC")
+    os.chdir(main_directory) # return to parent dir
+    shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "pkg"),
+                    os.path.join(build_folder_AC, "core", "pkg"),
+                    dirs_exist_ok=True)
+
+    # Run AC build
+    build(build_AC_batch,build_folder_AC)
+
+    # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
+    print("🟢 Copying files from AC to GC")
+    time.sleep(2) #for debugging
+    os.chdir(main_directory) # return to parent dir
+    shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
+                    os.path.join(os.getcwd(), build_folder_GC, "core", "pkg"),
+                    dirs_exist_ok=True)
+
+    # Run GC build again
+    build(build_GC_batch,build_folder_GC)
+
+    # Run get_prg and get_sym for AC
+    os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
+    print("🟢 AC: Running get_prg and get_sym")
+    subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
+    subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
+
+    # Run get_prg and get_sym for GC
+    print("🟢 GC: Running get_prg and get_sym")
+    subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
+    subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
+
+    # End log file
+    with open(log_file, "a") as f:
+        f.write(f"Script finished at {time.strftime('%x %X')}\n")
+    input("Press Enter to continue...")
