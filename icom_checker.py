@@ -7,7 +7,7 @@ import time
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
 #global variables
-main_folder = os.getcwd() 
+main_directory = os.getcwd() 
 
 # Function to prompt user for folder selection
 def select_entry(prompt_message):
@@ -106,19 +106,19 @@ line4 = find_line(file_GC_2)
 compare_lines(line1,line2,line3,line4)
 
 # Prompt user for build variants
-os.chdir(main_folder + "/AC")
+os.chdir(main_directory + "/AC")
 build_AC_batch = select_entry("⏩ Choose build variant for AC: ")
-os.chdir(main_folder + "/GC")
+os.chdir(main_directory + "/GC")
 build_GC_batch = select_entry("⏩ Choose build variant for GC: ")
 
 # Run AC build
-os.chdir(main_folder)
+os.chdir(main_directory)
 build(build_AC_batch,build_folder_AC)
 
 # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
 print("🟢 Copying files from AC to GC")
 time.sleep(2) #for debugging
-os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
+os.chdir(main_directory) # return to parent dir
 shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
                 os.path.join(os.getcwd(), build_folder_GC, "core", "pkg"),
                 dirs_exist_ok=True)
@@ -128,7 +128,7 @@ build(build_GC_batch,build_folder_GC)
 
 # Copy files from GC to AC folder
 print("🟢 Copying files from GC to AC")
-os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
+os.chdir(main_directory) # return to parent dir
 shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "pkg"),
                 os.path.join(build_folder_AC, "core", "pkg"),
                 dirs_exist_ok=True)
