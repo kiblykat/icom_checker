@@ -8,6 +8,10 @@ import time
 
 #global variables
 main_directory = os.getcwd() 
+log_file = "logFile.txt"
+os.chdir(main_directory)
+with open(log_file, "a") as f:
+    f.write("\n = = = = NEW BUILD STARTED = = = = \n")
 
 # Function to prompt user for folder selection
 def select_entry(prompt_message):
@@ -16,7 +20,7 @@ def select_entry(prompt_message):
         if os.path.exists(folder_path) or os.path.exists(folder_path + ".bat") :
             return folder_path
         else:
-            print("🔴 File/Folder not found. Please check spelling.")
+            log("🔴 File/Folder not found. Please check spelling.")
 
 # Function to find line containing search word
 def find_line(file_path):
@@ -29,43 +33,43 @@ def find_line(file_path):
 # Function to compare lines between AC and GC folder
 def compare_lines(line1,line2,line3,line4):
     if line1 is None:
-        print("INTERFACEID not found in", file_AC)
+        log("INTERFACEID not found in" + file_AC)
     if line2 is None:
-        print("INTERFACEID not found in", file_GC)
+        log("INTERFACEID not found in" + file_GC)
     if line3 is None:
-        print("INTERFACEID not found in", file_AC_2)
+        log("INTERFACEID not found in" + file_AC_2)
     if line4 is None:
-        print("INTERFACEID not found in", file_GC_2)
+        log("INTERFACEID not found in" + file_GC_2)
     if line1 != line2:
-        print("🔴 Your folders are not synced \n")
-        print(f"{file_AC}: ❌ {line1}")
-        print(f"{file_GC}: ❌ {line2} \n")
+        log("🔴 Your folders are not synced \n")
+        log(f"❌ {file_AC}: {line1}")
+        log(f"❌ {file_GC}: {line2} \n")
         time.sleep(2)
-        print("Proceeding with ICOM build syncing...")
+        log("Proceeding with ICOM build syncing...")
         time.sleep(5)
         return
     elif line3 != line4:
-        print("🔴 Your folders are not synced \n")
-        print(f"{file_AC_2}: ❌ {line3}")
-        print(f"{file_GC_2}: ❌ {line4} \n")
+        log("🔴 Your folders are not synced \n")
+        log(f"❌ {file_AC_2}: {line3}")
+        log(f"❌ {file_GC_2}: {line4} \n")
         time.sleep(2)
-        print("🟢 Proceeding with ICOM build syncing...")
+        log("🟢 Proceeding with ICOM build syncing...")
         time.sleep(5)
         return() 
     else:
-        print("🟢 Your folders are synced. Congratulations")
+        log("🟢 Your folders are synced. Congratulations")
         while True:
             continue_sync = input("⏩ Do you still want to proceed with sync? (y/n): ").lower()
             if continue_sync == "y":
                 break
             elif continue_sync == "n":
-                print("Script finished at", time.strftime('%x %X'))
+                log("🟢 Script finished at", time.strftime('%x %X'))
                 input("⏩ Press Enter to continue...")
                 exit()
 
 # Function to build AC/GC folders
 def build(build_batch_file,build_folder):
-    print("🟢 Running AC batch file:", build_batch_file)
+    log("🟢 Running AC batch file:" + build_batch_file)
     os.chdir(build_folder)
     subprocess.run([build_batch_file + ".bat"])
     return
@@ -75,17 +79,22 @@ def choose_sequence():
         first_folder = input("⏩ Choose which folder to build first: ").upper()
         if (first_folder == "AC" or first_folder == "GC"):
             return first_folder
-        print("🔴 Please inpit a valid folder")
+        log("🔴 Please input a valid folder")
+
+def log(log_data):
+    print(log_data)
+    os.chdir(main_directory)
+    data_to_write = log_data[2:]
+    with open(log_file, "a") as f:
+        f.write(data_to_write + "\n")
+
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = START OF CODE FLOW  = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
 
 # Start log file
-log_file = "logFile.txt"
-with open(log_file, "a") as f:
-    f.write(f"Script started at {time.strftime('%x %X')}\n")
-
+log(f"🟢 Script started at {time.strftime('%x %X')}\n")
 
 # Prompt user for AC and GC folders
 build_folder_AC = select_entry("⏩ Choose build folder for AC: ").upper()
@@ -124,7 +133,7 @@ if(choose_sequence() == "AC"): # AC build first
     build(build_AC_batch,build_folder_AC)
 
     # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
-    print("🟢 Copying files from AC to GC")
+    log("🟢 Copying files from AC to GC")
     time.sleep(2) #for debugging
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
@@ -135,7 +144,7 @@ if(choose_sequence() == "AC"): # AC build first
     build(build_GC_batch,build_folder_GC)
 
     # Copy files from GC to AC folder
-    print("🟢 Copying files from GC to AC")
+    log("🟢 Copying files from GC to AC")
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "pkg"),
                     os.path.join(build_folder_AC, "core", "pkg"),
@@ -146,18 +155,17 @@ if(choose_sequence() == "AC"): # AC build first
 
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
-    print("🟢 AC: Running get_prg and get_sym")
+    log("🟢 AC: Running get_prg and get_sym")
     subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
     subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
 
     # Run get_prg and get_sym for GC
-    print("🟢 GC: Running get_prg and get_sym")
+    log("🟢 GC: Running get_prg and get_sym")
     subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
     subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
 
     # End log file
-    with open(log_file, "a") as f:
-        f.write(f"Script finished at {time.strftime('%x %X')}\n")
+    log(f"🟢 Script finished at {time.strftime('%x %X')}\n")
     input("Press Enter to continue...")
 else: #GC build first
     os.chdir(main_directory)
@@ -165,7 +173,7 @@ else: #GC build first
     build(build_GC_batch,build_folder_GC)
 
     # Copy files from GC to AC folder
-    print("🟢 Copying files from GC to AC")
+    log("🟢 Copying files from GC to AC")
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "pkg"),
                     os.path.join(build_folder_AC, "core", "pkg"),
@@ -175,7 +183,7 @@ else: #GC build first
     build(build_AC_batch,build_folder_AC)
 
     # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
-    print("🟢 Copying files from AC to GC")
+    log("🟢 Copying files from AC to GC")
     time.sleep(2) #for debugging
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
@@ -187,16 +195,15 @@ else: #GC build first
 
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
-    print("🟢 AC: Running get_prg and get_sym")
+    log("🟢 AC: Running get_prg and get_sym")
     subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
     subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
 
     # Run get_prg and get_sym for GC
-    print("🟢 GC: Running get_prg and get_sym")
+    log("🟢 GC: Running get_prg and get_sym")
     subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
     subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
 
     # End log file
-    with open(log_file, "a") as f:
-        f.write(f"Script finished at {time.strftime('%x %X')}\n")
+    log(f"🟢 Script finished at {time.strftime('%x %X')}\n")
     input("Press Enter to continue...")
