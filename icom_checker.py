@@ -6,14 +6,17 @@ import time
 # = = = = = = = = = = = = = = DEFINING FUNCTIONS  = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
+#global variables
+main_folder = os.getcwd() 
+
 # Function to prompt user for folder selection
-def select_folder(prompt_message):
+def select_entry(prompt_message):
     while True:
         folder_path = input(prompt_message)
-        if os.path.exists(folder_path):
+        if os.path.exists(folder_path) | os.path.exists(folder_path + ".bat") :
             return folder_path
         else:
-            print("🔴 Project folder not found. Please check spelling.")
+            print("🔴 File/Folder not found. Please check spelling.")
 
 # Function to find line containing search word
 def find_line(file_path):
@@ -22,30 +25,51 @@ def find_line(file_path):
             if search_word in line:
                 return line.strip()
     return None
-def compare_lines(line1,line2):
+
+# Function to compare lines between AC and GC folder
+def compare_lines(line1,line2,line3,line4):
     if line1 is None:
-        if line2 is None:
-            print("INTERFACEID not found in either file.")
-        else:
-            print("INTERFACEID not found in", file_AC)
-    elif line2 is None:
+        print("INTERFACEID not found in", file_AC)
+    if line2 is None:
         print("INTERFACEID not found in", file_GC)
+    if line3 is None:
+        print("INTERFACEID not found in", file_AC_2)
+    if line4 is None:
+        print("INTERFACEID not found in", file_GC_2)
+    if line1 != line2:
+        print("🔴 Your folders are not synced \n")
+        print(f"{file_AC}: {line1} \n")
+        print(f"{file_GC}: {line2} \n")
+        time.sleep(2)
+        print("Proceeding with ICOM build syncing...")
+        time.sleep(5)
+        return
+    elif line3 != line4:
+        print("🔴 Your folders are not synced \n")
+        print(f"{file_AC_2}: {line3} \n")
+        print(f"{file_GC_2}: {line4} \n")
+        time.sleep(2)
+        print("Proceeding with ICOM build syncing...")
+        time.sleep(5)
+        return() 
     else:
-        if line1 == line2:
-            print("Your folders are synced. Congratulations")
-            while True:
-                continue_sync = input("Do you still want to proceed with sync? (y/n): ").lower()
-                if continue_sync == "y":
-                    break
-                elif continue_sync == "n":
-                    print("Script finished at", time.strftime('%x %X'))
-                    input("Press Enter to continue...")
-                    exit()
-        else:
-            print("Your folders are not synced. Proceeding with ICOM build syncing...")
-            time.sleep(2)
-            print("Please gitclean project folders before running ICOM sync")
-            time.sleep(5)
+        print("Your folders are synced. Congratulations")
+        while True:
+            continue_sync = input("Do you still want to proceed with sync? (y/n): ").lower()
+            if continue_sync == "y":
+                break
+            elif continue_sync == "n":
+                print("Script finished at", time.strftime('%x %X'))
+                input("Press Enter to continue...")
+                exit()
+
+# Function to build AC/GC folders
+def build(build_batch_file,build_folder):
+    print("🐛 " +  os.getcwd())
+    print("🟢 Running AC batch file:", build_batch_file)
+    os.chdir(build_folder)
+    subprocess.run([build_batch_file + ".bat"])
+    return
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = START OF CODE FLOW  = = = = = = = = = = = = = = = 
@@ -59,8 +83,8 @@ with open(log_file, "a") as f:
 
 
 # Prompt user for AC and GC folders
-build_folder_AC = select_folder("⏩ Choose build folder for AC: ")
-build_folder_GC = select_folder("⏩ Choose build folder for GC: ")
+build_folder_AC = select_entry("⏩ Choose build folder for AC: ")
+build_folder_GC = select_entry("⏩ Choose build folder for GC: ")
 
 # Set file paths for icom_export.sdh
 file_AC = os.path.join(build_folder_AC, "core", "pkg", "icom", "icom_export.sdh")
@@ -80,17 +104,18 @@ line3 = find_line(file_AC_2)
 line4 = find_line(file_GC_2)
 
 # Compare lines
-compare_lines(line1,line2)
-compare_lines(line3,line4)
+compare_lines(line1,line2,line3,line4)
 
 # Prompt user for build variants
-build_AC = input("⏩ Choose build variant for AC: ")
-build_GC = input("⏩ Choose build variant for GC: ")
+print(os.getcwd())
+os.chdir(main_folder + "/AC")
+build_AC_batch = select_entry("⏩ Choose build variant for AC: ")
+os.chdir(main_folder + "/GC")
+build_GC_batch = select_entry("⏩ Choose build variant for GC: ")
 
 # Run AC build
-print("🟢 Running AC batch file:", build_AC)
-os.chdir(build_folder_AC)
-subprocess.run([build_AC + ".bat"])
+os.chdir(main_folder)
+build(build_AC_batch,build_folder_AC)
 
 # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
 print("🟢 Copying files from AC to GC")
@@ -101,10 +126,7 @@ shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFG
                 dirs_exist_ok=True)
 
 # Run GC build
-print("🟢 Running GC batch file:", build_GC)
-print("CURRENT DIR" + os.getcwd())
-os.chdir(build_folder_GC)
-subprocess.run([build_GC + ".bat"])
+build(build_GC_batch,build_folder_GC)
 
 # Copy files from GC to AC folder
 print("🟢 Copying files from GC to AC")
@@ -114,9 +136,7 @@ shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "
                 dirs_exist_ok=True)
 
 # Run AC build again
-print("🟢 Running AC batch file again:", build_AC)
-os.chdir(build_folder_AC)
-subprocess.run([build_AC + ".bat"])
+build(build_AC_batch,build_folder_AC)
 
 # Run get_prg and get_sym for AC
 os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
