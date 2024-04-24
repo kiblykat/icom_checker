@@ -1,3 +1,6 @@
+# = = = = = = = = = = = = = = = = = = = = ICOM CHECKER & SYNC = = = = = = = = = = = = = = = = = = = = = =
+# visit https://confluence.auto.continental.cloud/display/VNIHMIAEICSW/ICOM+Sync+Tool for details on usage  
+
 import os
 import subprocess
 import shutil
