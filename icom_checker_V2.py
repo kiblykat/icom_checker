@@ -67,7 +67,7 @@ def compare_lines(line1,line2,line3,line4):
             if continue_sync == "y":
                 break
             elif continue_sync == "n":
-                log("🟢 Script finished at", time.strftime('%x %X'))
+                log("🟢 Script finished at" + time.strftime('%x %X'))
                 input("⏩ Press Enter to continue...")
                 exit()
 
