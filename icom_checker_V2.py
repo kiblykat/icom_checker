@@ -75,7 +75,13 @@ def compare_lines(line1,line2,line3,line4):
 def build(build_batch_file,build_folder,ACGC):
     log(f"🟢 Running {ACGC} batch file:" + build_batch_file)
     os.chdir(build_folder)
-    subprocess.run([build_batch_file + ".bat"])
+    # subprocess.run([build_batch_file + ".bat"])
+
+    # Run the batch file in a separate subprocess, while printing log in current terminal
+    process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
+    # Wait for the process to finish and simulate an Enter key press
+    stdout,stderr = process.communicate(input='\n')
+    
     return
 
 def choose_sequence():
