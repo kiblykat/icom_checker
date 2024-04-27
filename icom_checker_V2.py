@@ -37,19 +37,19 @@ def find_line(file_path):
 # Function to compare lines between AC and GC folder
 def compare_lines(line1,line2,line3,line4):
     if line1 is None:
-        log("INTERFACEID not found in" + file_AC)
+        log("❌ INTERFACEID not found in" + file_AC)
     if line2 is None:
-        log("INTERFACEID not found in" + file_GC)
+        log("❌ INTERFACEID not found in" + file_GC)
     if line3 is None:
-        log("INTERFACEID not found in" + file_AC_2)
+        log("❌ INTERFACEID not found in" + file_AC_2)
     if line4 is None:
-        log("INTERFACEID not found in" + file_GC_2)
+        log("❌ INTERFACEID not found in" + file_GC_2)
     if line1 != line2:
         log("🔴 Your folders are not synced \n")
         log(f"❌ {file_AC}: {line1}")
         log(f"❌ {file_GC}: {line2} \n")
         time.sleep(2)
-        log("Proceeding with ICOM build syncing...")
+        log("🟢 Proceeding with ICOM build syncing...")
         time.sleep(5)
         return
     elif line3 != line4:
@@ -78,7 +78,7 @@ def build(build_batch_file,build_folder,ACGC):
     # subprocess.run([build_batch_file + ".bat"])
 
     # Run the batch file in a separate subprocess, while printing log in current terminal
-    process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
+    process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, text=True)
     # Wait for the process to finish and simulate an Enter key press
     stdout,stderr = process.communicate(input='\n')
     
