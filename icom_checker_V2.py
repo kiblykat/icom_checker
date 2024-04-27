@@ -5,6 +5,10 @@ import os
 import subprocess
 import shutil
 import time
+
+#defining constants
+FPKX = 1 
+WHUD = 2
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = DEFINING FUNCTIONS  = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -16,6 +20,13 @@ os.chdir(main_directory)
 with open(log_file, "a") as f:
     f.write("\n = = = = NEW BUILD STARTED = = = = \n")
 
+def getProjectType():
+    while True:
+        projectType = input("Which project are you building:\nFPKX: 1 \nWHUD: 2\n")
+        if(projectType.isdigit):
+            if(int(projectType) > 0 and int(projectType) < 3):
+                return int(projectType)
+        print("Enter a valid option")
 # Function to prompt user for folder selection
 def select_entry(prompt_message):
     while True:
@@ -78,7 +89,7 @@ def build(build_batch_file,build_folder,ACGC):
     # subprocess.run([build_batch_file + ".bat"])
 
     # Run the batch file in a separate subprocess, while printing log in current terminal
-    process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, text=True)
+    process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
     # Wait for the process to finish and simulate an Enter key press
     stdout,stderr = process.communicate(input='\n')
     
@@ -98,6 +109,19 @@ def log(log_data):
     with open(log_file, "a") as f:
         f.write(data_to_write + "\n")
 
+def getPrgSym(build_folder, projectType):
+    if projectType == FPKX:
+        prgFolder = os.path.join(os.getcwd(),build_folder, "tool", "integration", "tool", "deliver", "core")
+        if os.path.exists(prgFolder):
+            subprocess.run(os.path.join(prgFolder, "get_prg.bat"))
+            subprocess.run(os.path.join(prgFolder, "get_sym.bat"))
+    elif projectType == WHUD:
+        prgFolder = os.path.join(os.getcwd(),build_folder,"prv", "tool", "_GEN")
+        print("prgFolder is: " + prgFolder)
+        if os.path.exists(prgFolder):
+            subprocess.run(os.path.join(prgFolder, "__changeRSA_PubKey.bat"))
+            subprocess.run(os.path.join(prgFolder, "__Gen_ALL.bat"))
+    
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = START OF CODE FLOW  = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -105,6 +129,8 @@ def log(log_data):
 
 # Start log file
 log(f"🟢 Script started at {time.strftime('%x %X')}\n")
+#Prompt if building WHUD or FPKX
+projectType = getProjectType()
 
 # Prompt user for AC and GC folders
 build_folder_AC = select_entry("⏩ Choose build folder for AC: ").upper()
@@ -165,14 +191,16 @@ if(choose_sequence() == "AC"): # AC build first
 
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
-    log("🟢 AC: Running get_prg and get_sym")
-    subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
-    subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
-
-    # Run get_prg and get_sym for GC
-    log("🟢 GC: Running get_prg and get_sym")
-    subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
-    subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
+    if(projectType == FPKX): 
+        log("🟢 AC: Running get_prg and get_sym")
+        getPrgSym(build_folder_AC, FPKX)
+        log("🟢 GC: Running get_prg and get_sym")
+        getPrgSym(build_folder_GC, FPKX)
+    elif(projectType == WHUD):
+        log("🟢 AC: Running __changeRSA_PubKey and __Gen_ALL")
+        getPrgSym(build_folder_AC, WHUD)
+        log("🟢 GC: Running __changeRSA_PubKey and __Gen_ALL")
+        getPrgSym(build_folder_GC, WHUD)
 
     # End log file
     log(f"🟢 Script finished at {time.strftime('%x %X')}\n")
@@ -205,14 +233,17 @@ else: #GC build first
 
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
-    log("🟢 AC: Running get_prg and get_sym")
-    subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
-    subprocess.run([os.path.join(os.getcwd(), build_folder_AC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
-
-    # Run get_prg and get_sym for GC
-    log("🟢 GC: Running get_prg and get_sym")
-    subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_prg.bat")])
-    subprocess.run([os.path.join(build_folder_GC, "tool", "integration", "tool", "deliver", "core", "get_sym.bat")])
+    
+    if(projectType == FPKX): 
+        log("🟢 AC: Running get_prg and get_sym")
+        getPrgSym(build_folder_AC, FPKX)
+        log("🟢 GC: Running get_prg and get_sym")
+        getPrgSym(build_folder_GC, FPKX)
+    elif(projectType == WHUD):
+        log("🟢 AC: Running __changeRSA_PubKey and __Gen_ALL")
+        getPrgSym(build_folder_AC, WHUD)
+        log("🟢 GC: Running __changeRSA_PubKey and __Gen_ALL")
+        getPrgSym(build_folder_GC, WHUD)
 
     # End log file
     log(f"🟢 Script finished at {time.strftime('%x %X')}\n")
