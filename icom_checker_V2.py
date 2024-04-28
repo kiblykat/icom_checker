@@ -49,13 +49,13 @@ def find_line(file_path):
 # Function to compare lines between AC and GC folder
 def compare_lines(line1,line2,line3,line4):
     if line1 is None:
-        log(f"❌ {time.strftime('%X')} INTERFACEID not found in" + file_AC)
+        log(f"❌ {time.strftime('%X')} INTERFACEID not found in " + file_AC)
     if line2 is None:
-        log(f"❌ {time.strftime('%X')} INTERFACEID not found in" + file_GC)
+        log(f"❌ {time.strftime('%X')} INTERFACEID not found in " + file_GC)
     if line3 is None:
-        log(f"❌ {time.strftime('%X')} INTERFACEID not found in" + file_AC_2)
+        log(f"❌ {time.strftime('%X')} INTERFACEID not found in " + file_AC_2)
     if line4 is None:
-        log(f"❌ {time.strftime('%X')} INTERFACEID not found in" + file_GC_2)
+        log(f"❌ {time.strftime('%X')} INTERFACEID not found in " + file_GC_2)
     if line1 != line2:
         log(f"🔴 {time.strftime('%X')} Your folders are not synced \n")
         log(f"❌ {file_AC}: {line1}")
@@ -119,9 +119,6 @@ def getPrgSym(build_folder, projectType):
             getPrgProcess = subprocess.Popen([os.path.join(prgFolder, "get_prg.bat")],stdin=subprocess.PIPE, text=True)
             stdout,stderr = getPrgProcess.communicate(input='ALL \n')
             subprocess.run(os.path.join(prgFolder, "get_sym.bat"))
-    # process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
-    # # Wait for the process to finish and simulate an Enter key press
-    # stdout,stderr = process.communicate(input='\n')
     elif projectType == WHUD:
         prgFolder = os.path.join(os.getcwd(),build_folder,"prv", "tool", "_GEN")
         if os.path.exists(prgFolder):
