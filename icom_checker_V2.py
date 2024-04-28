@@ -25,7 +25,7 @@ def getProjectType():
     while True:
         projectType = input("Which project are you building:\nFPKM: 0\nFPKE: 1 \nWHUD: 2\n")
         if(projectType.isdigit):
-            if(int(projectType) > 0 and int(projectType) < 3):
+            if(int(projectType) >= 0 and int(projectType) < 3):
                 return int(projectType)
         print("Enter a valid option")
 # Function to prompt user for folder selection
@@ -176,7 +176,7 @@ build_GC_batch = select_entry("⏩ Choose build variant for GC: ")
 if(choose_sequence() == "AC"): # AC build first
     # Run AC build
     os.chdir(main_directory)
-    build(build_AC_batch,build_folder_AC, "AC")
+    build(build_AC_batch,build_folder_AC, "AC",projectType)
 
     # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
     log(f"🟢 {time.strftime('%X')} Copying files from AC to GC")
@@ -187,7 +187,7 @@ if(choose_sequence() == "AC"): # AC build first
                     dirs_exist_ok=True)
 
     # Run GC build
-    build(build_GC_batch,build_folder_GC,"GC")
+    build(build_GC_batch,build_folder_GC,"GC",projectType)
 
     # Copy files from GC to AC folder
     log(f"🟢 {time.strftime('%X')} Copying files from GC to AC")
@@ -197,7 +197,7 @@ if(choose_sequence() == "AC"): # AC build first
                     dirs_exist_ok=True)
 
     # Run AC build again
-    build(build_AC_batch,build_folder_AC,"AC")
+    build(build_AC_batch,build_folder_AC,"AC",projectType)
 
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
@@ -223,7 +223,7 @@ if(choose_sequence() == "AC"): # AC build first
 else: #GC build first
     os.chdir(main_directory)
     # Run GC build
-    build(build_GC_batch,build_folder_GC,"GC")
+    build(build_GC_batch,build_folder_GC,"GC",projectType)
 
     # Copy files from GC to AC folder
     log(f"🟢 {time.strftime('%X')} Copying files from GC to AC")
@@ -233,7 +233,7 @@ else: #GC build first
                     dirs_exist_ok=True)
 
     # Run AC build
-    build(build_AC_batch,build_folder_AC,"AC")
+    build(build_AC_batch,build_folder_AC,"AC",projectType)
 
     # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
     log(f"🟢 {time.strftime('%X')} Copying files from AC to GC")
@@ -244,7 +244,7 @@ else: #GC build first
                     dirs_exist_ok=True)
 
     # Run GC build again
-    build(build_GC_batch,build_folder_GC,"GC")
+    build(build_GC_batch,build_folder_GC,"GC",projectType)
 
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
