@@ -91,7 +91,7 @@ def build(build_batch_file,build_folder,ACGC,proj):
     # subprocess.run([build_batch_file + ".bat"])
     if proj==0:
         process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
-        process.communicate(input='VW')
+        process.communicate(input='2')
     else:
         # Run the batch file in a separate subprocess, while printing log in current terminal
         process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
