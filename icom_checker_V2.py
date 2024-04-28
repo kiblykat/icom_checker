@@ -31,10 +31,11 @@ def getProjectType():
 def select_entry(prompt_message):
     while True:
         folder_path = input(prompt_message)
-        if os.path.exists(folder_path) or os.path.exists(folder_path + ".bat") :
+        if os.path.exists(os.path.join(os.getcwd(), folder_path)) or os.path.exists(os.path.join(os.getcwd(), folder_path)+".bat") :
             return folder_path
         else:
-            log("🔴 File/Folder not found. Please check spelling.")
+            log(f"🔴 {time.strftime('%X')} File/Folder not found. Please check spelling.")
+
 
 # Function to find line containing search word
 def find_line(file_path):
@@ -48,19 +49,19 @@ def find_line(file_path):
 # Function to compare lines between AC and GC folder
 def compare_lines(line1,line2,line3,line4):
     if line1 is None:
-        log("❌ INTERFACEID not found in" + file_AC)
+        log(f"❌ {time.strftime('%X')} INTERFACEID not found in" + file_AC)
     if line2 is None:
-        log("❌ INTERFACEID not found in" + file_GC)
+        log(f"❌ {time.strftime('%X')} INTERFACEID not found in" + file_GC)
     if line3 is None:
-        log("❌ INTERFACEID not found in" + file_AC_2)
+        log(f"❌ {time.strftime('%X')} INTERFACEID not found in" + file_AC_2)
     if line4 is None:
-        log("❌ INTERFACEID not found in" + file_GC_2)
+        log(f"❌ {time.strftime('%X')} INTERFACEID not found in" + file_GC_2)
     if line1 != line2:
-        log("🔴 Your folders are not synced \n")
+        log(f"🔴 {time.strftime('%X')} Your folders are not synced \n")
         log(f"❌ {file_AC}: {line1}")
         log(f"❌ {file_GC}: {line2} \n")
         time.sleep(2)
-        log("🟢 Proceeding with ICOM build syncing...")
+        log(f"🟢 {time.strftime('%X')} Proceeding with ICOM build syncing...")
         time.sleep(5)
         return
     elif line3 != line4:
@@ -68,23 +69,23 @@ def compare_lines(line1,line2,line3,line4):
         log(f"❌ {file_AC_2}: {line3}")
         log(f"❌ {file_GC_2}: {line4} \n")
         time.sleep(2)
-        log("🟢 Proceeding with ICOM build syncing...")
+        log(f"🟢 {time.strftime('%X')} Proceeding with ICOM build syncing...")
         time.sleep(5)
         return() 
     else:
-        log("🟢 Your folders are synced. Congratulations")
+        log(f"🟢 {time.strftime('%X')} Your folders are synced. Congratulations")
         while True:
-            continue_sync = input("⏩ Do you still want to proceed with sync? (y/n): ").lower()
+            continue_sync = input(f"⏩ {time.strftime('%X')} Do you still want to proceed with sync? (y/n): ").lower()
             if continue_sync == "y":
                 break
             elif continue_sync == "n":
-                log("🟢 Script finished at", time.strftime('%x %X'))
+                log(f"🟢 {time.strftime('%X')} Script finished")
                 input("⏩ Press Enter to continue...")
                 exit()
 
 # Function to build AC/GC folders
 def build(build_batch_file,build_folder,ACGC):
-    log(f"🟢 Running {ACGC} batch file:" + build_batch_file)
+    log(f"🟢 {time.strftime('%X')} Running {ACGC} batch file:" + build_batch_file)
     os.chdir(build_folder)
     # subprocess.run([build_batch_file + ".bat"])
 
@@ -113,12 +114,20 @@ def getPrgSym(build_folder, projectType):
     if projectType == FPKX:
         prgFolder = os.path.join(os.getcwd(),build_folder, "tool", "integration", "tool", "deliver", "core")
         if os.path.exists(prgFolder):
-            subprocess.run(os.path.join(prgFolder, "get_prg.bat"))
+            os.chdir(prgFolder)
+            print(os.getcwd())
+            getPrgProcess = subprocess.Popen([os.path.join(prgFolder, "get_prg.bat")],stdin=subprocess.PIPE, text=True)
+            stdout,stderr = getPrgProcess.communicate(input='ALL \n')
             subprocess.run(os.path.join(prgFolder, "get_sym.bat"))
+    # process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
+    # # Wait for the process to finish and simulate an Enter key press
+    # stdout,stderr = process.communicate(input='\n')
     elif projectType == WHUD:
         prgFolder = os.path.join(os.getcwd(),build_folder,"prv", "tool", "_GEN")
-        print("prgFolder is: " + prgFolder)
         if os.path.exists(prgFolder):
+            print("prgFolder is: " + prgFolder)
+            os.chdir(prgFolder)
+            print(os.getcwd())
             subprocess.run(os.path.join(prgFolder, "__changeRSA_PubKey.bat"))
             subprocess.run(os.path.join(prgFolder, "__Gen_ALL.bat"))
     
@@ -128,7 +137,7 @@ def getPrgSym(build_folder, projectType):
 
 
 # Start log file
-log(f"🟢 Script started at {time.strftime('%x %X')}\n")
+log(f"🟢 Script started at {time.strftime('%x %X')}  \n")
 #Prompt if building WHUD or FPKX
 projectType = getProjectType()
 
@@ -169,7 +178,7 @@ if(choose_sequence() == "AC"): # AC build first
     build(build_AC_batch,build_folder_AC, "AC")
 
     # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
-    log("🟢 Copying files from AC to GC")
+    log(f"🟢 {time.strftime('%X')} Copying files from AC to GC")
     time.sleep(2) #for debugging
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
@@ -180,7 +189,7 @@ if(choose_sequence() == "AC"): # AC build first
     build(build_GC_batch,build_folder_GC,"GC")
 
     # Copy files from GC to AC folder
-    log("🟢 Copying files from GC to AC")
+    log(f"🟢 {time.strftime('%X')} Copying files from GC to AC")
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "pkg"),
                     os.path.join(build_folder_AC, "core", "pkg"),
@@ -192,14 +201,14 @@ if(choose_sequence() == "AC"): # AC build first
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
     if(projectType == FPKX): 
-        log("🟢 AC: Running get_prg and get_sym")
+        log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
         getPrgSym(build_folder_AC, FPKX)
-        log("🟢 GC: Running get_prg and get_sym")
+        log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
         getPrgSym(build_folder_GC, FPKX)
     elif(projectType == WHUD):
-        log("🟢 AC: Running __changeRSA_PubKey and __Gen_ALL")
+        log(f"🟢 {time.strftime('%X')} AC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_AC, WHUD)
-        log("🟢 GC: Running __changeRSA_PubKey and __Gen_ALL")
+        log(f"🟢 {time.strftime('%X')} GC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_GC, WHUD)
 
     # End log file
@@ -211,7 +220,7 @@ else: #GC build first
     build(build_GC_batch,build_folder_GC,"GC")
 
     # Copy files from GC to AC folder
-    log("🟢 Copying files from GC to AC")
+    log(f"🟢 {time.strftime('%X')} Copying files from GC to AC")
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "pkg"),
                     os.path.join(build_folder_AC, "core", "pkg"),
@@ -221,7 +230,7 @@ else: #GC build first
     build(build_AC_batch,build_folder_AC,"AC")
 
     # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
-    log("🟢 Copying files from AC to GC")
+    log(f"🟢 {time.strftime('%X')} Copying files from AC to GC")
     time.sleep(2) #for debugging
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
@@ -235,14 +244,14 @@ else: #GC build first
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
     
     if(projectType == FPKX): 
-        log("🟢 AC: Running get_prg and get_sym")
+        log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
         getPrgSym(build_folder_AC, FPKX)
-        log("🟢 GC: Running get_prg and get_sym")
+        log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
         getPrgSym(build_folder_GC, FPKX)
     elif(projectType == WHUD):
-        log("🟢 AC: Running __changeRSA_PubKey and __Gen_ALL")
+        log(f"🟢 {time.strftime('%X')} AC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_AC, WHUD)
-        log("🟢 GC: Running __changeRSA_PubKey and __Gen_ALL")
+        log(f"🟢 {time.strftime('%X')} GC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_GC, WHUD)
 
     # End log file
