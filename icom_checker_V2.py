@@ -7,7 +7,8 @@ import shutil
 import time
 
 #defining constants
-FPKX = 1 
+FPKM = 0
+FPKE = 1 
 WHUD = 2
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = DEFINING FUNCTIONS  = = = = = = = = = = = = = = = = 
@@ -22,9 +23,9 @@ with open(log_file, "a") as f:
 
 def getProjectType():
     while True:
-        projectType = input("Which project are you building:\nFPKX: 1 \nWHUD: 2\n")
+        projectType = input("Which project are you building:\nFPKM: 0\nFPKE: 1 \nWHUD: 2\n")
         if(projectType.isdigit):
-            if(int(projectType) > 0 and int(projectType) < 3):
+            if(int(projectType) >= 0 and int(projectType) < 3):
                 return int(projectType)
         print("Enter a valid option")
 # Function to prompt user for folder selection
@@ -84,15 +85,18 @@ def compare_lines(line1,line2,line3,line4):
                 exit()
 
 # Function to build AC/GC folders
-def build(build_batch_file,build_folder,ACGC):
+def build(build_batch_file,build_folder,ACGC,projectType):
     log(f"🟢 {time.strftime('%X')} Running {ACGC} batch file:" + build_batch_file)
     os.chdir(build_folder)
     # subprocess.run([build_batch_file + ".bat"])
-
-    # Run the batch file in a separate subprocess, while printing log in current terminal
-    process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
-    # Wait for the process to finish and simulate an Enter key press
-    stdout,stderr = process.communicate(input='\n')
+    if projectType==0 and ACGC=="GC":
+        process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
+        process.communicate(input=variant)
+    else:
+        # Run the batch file in a separate subprocess, while printing log in current terminal
+        process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
+        # Wait for the process to finish and simulate an Enter key press
+        stdout,stderr = process.communicate(input='\n')
     
     return
 
@@ -111,7 +115,7 @@ def log(log_data):
         f.write(data_to_write + "\n")
 
 def getPrgSym(build_folder, projectType):
-    if projectType == FPKX:
+    if projectType == FPKM or projectType == FPKM:
         prgFolder = os.path.join(os.getcwd(),build_folder, "tool", "integration", "tool", "deliver", "core")
         if os.path.exists(prgFolder):
             os.chdir(prgFolder)
@@ -137,6 +141,11 @@ def getPrgSym(build_folder, projectType):
 log(f"🟢 Script started at {time.strftime('%x %X')}  \n")
 #Prompt if building WHUD or FPKX
 projectType = getProjectType()
+if projectType==FPKM:
+    while True:
+        variant = input("⏩ Select Build variant to build\n-------------------------------------------------------------\n  1    -- for FPKM 24S1 (GEN1)\n  2    -- for FPKM Seamless (GEN2)\n").upper()
+        if(variant == '1' or variant == '2'):
+            break
 
 # Prompt user for AC and GC folders
 build_folder_AC = select_entry("⏩ Choose build folder for AC: ").upper()
@@ -172,7 +181,7 @@ build_GC_batch = select_entry("⏩ Choose build variant for GC: ")
 if(choose_sequence() == "AC"): # AC build first
     # Run AC build
     os.chdir(main_directory)
-    build(build_AC_batch,build_folder_AC, "AC")
+    build(build_AC_batch,build_folder_AC, "AC",projectType)
 
     # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
     log(f"🟢 {time.strftime('%X')} Copying files from AC to GC")
@@ -183,7 +192,7 @@ if(choose_sequence() == "AC"): # AC build first
                     dirs_exist_ok=True)
 
     # Run GC build
-    build(build_GC_batch,build_folder_GC,"GC")
+    build(build_GC_batch,build_folder_GC,"GC",projectType)
 
     # Copy files from GC to AC folder
     log(f"🟢 {time.strftime('%X')} Copying files from GC to AC")
@@ -193,15 +202,20 @@ if(choose_sequence() == "AC"): # AC build first
                     dirs_exist_ok=True)
 
     # Run AC build again
-    build(build_AC_batch,build_folder_AC,"AC")
+    build(build_AC_batch,build_folder_AC,"AC",projectType)
 
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
-    if(projectType == FPKX): 
+    if(projectType == FPKM): 
         log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
-        getPrgSym(build_folder_AC, FPKX)
+        getPrgSym(build_folder_AC, FPKM)
         log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
-        getPrgSym(build_folder_GC, FPKX)
+        getPrgSym(build_folder_GC, FPKM)
+    elif(projectType == FPKE): 
+        log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
+        getPrgSym(build_folder_AC, FPKE)
+        log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
+        getPrgSym(build_folder_GC, FPKE)
     elif(projectType == WHUD):
         log(f"🟢 {time.strftime('%X')} AC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_AC, WHUD)
@@ -214,7 +228,7 @@ if(choose_sequence() == "AC"): # AC build first
 else: #GC build first
     os.chdir(main_directory)
     # Run GC build
-    build(build_GC_batch,build_folder_GC,"GC")
+    build(build_GC_batch,build_folder_GC,"GC",projectType)
 
     # Copy files from GC to AC folder
     log(f"🟢 {time.strftime('%X')} Copying files from GC to AC")
@@ -224,7 +238,7 @@ else: #GC build first
                     dirs_exist_ok=True)
 
     # Run AC build
-    build(build_AC_batch,build_folder_AC,"AC")
+    build(build_AC_batch,build_folder_AC,"AC",projectType)
 
     # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
     log(f"🟢 {time.strftime('%X')} Copying files from AC to GC")
@@ -235,16 +249,21 @@ else: #GC build first
                     dirs_exist_ok=True)
 
     # Run GC build again
-    build(build_GC_batch,build_folder_GC,"GC")
+    build(build_GC_batch,build_folder_GC,"GC",projectType)
 
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
     
-    if(projectType == FPKX): 
+    if(projectType == FPKM): 
         log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
-        getPrgSym(build_folder_AC, FPKX)
+        getPrgSym(build_folder_AC, FPKM)
         log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
-        getPrgSym(build_folder_GC, FPKX)
+        getPrgSym(build_folder_GC, FPKM)
+    elif(projectType == FPKE): 
+        log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
+        getPrgSym(build_folder_AC, FPKE)
+        log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
+        getPrgSym(build_folder_GC, FPKE)
     elif(projectType == WHUD):
         log(f"🟢 {time.strftime('%X')} AC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_AC, WHUD)
