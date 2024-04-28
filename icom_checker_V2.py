@@ -85,13 +85,13 @@ def compare_lines(line1,line2,line3,line4):
                 exit()
 
 # Function to build AC/GC folders
-def build(build_batch_file,build_folder,ACGC,proj):
+def build(build_batch_file,build_folder,ACGC,projectType):
     log(f"🟢 {time.strftime('%X')} Running {ACGC} batch file:" + build_batch_file)
     os.chdir(build_folder)
     # subprocess.run([build_batch_file + ".bat"])
-    if proj==0:
+    if projectType==0 and ACGC=="GC":
         process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
-        process.communicate(input='2')
+        process.communicate(input=variant)
     else:
         # Run the batch file in a separate subprocess, while printing log in current terminal
         process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
@@ -141,6 +141,11 @@ def getPrgSym(build_folder, projectType):
 log(f"🟢 Script started at {time.strftime('%x %X')}  \n")
 #Prompt if building WHUD or FPKX
 projectType = getProjectType()
+if projectType==FPKM:
+    while True:
+        variant = input("⏩ Select Build variant to build\n-------------------------------------------------------------\n  1    -- for FPKM 24S1 (GEN1)\n  2    -- for FPKM Seamless (GEN2)\n").upper()
+        if(variant == '1' or variant == '2'):
+            break
 
 # Prompt user for AC and GC folders
 build_folder_AC = select_entry("⏩ Choose build folder for AC: ").upper()
