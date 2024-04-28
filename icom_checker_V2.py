@@ -7,7 +7,8 @@ import shutil
 import time
 
 #defining constants
-FPKX = 1 
+FPKM = 0
+FPKE = 1 
 WHUD = 2
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = DEFINING FUNCTIONS  = = = = = = = = = = = = = = = = 
@@ -22,7 +23,7 @@ with open(log_file, "a") as f:
 
 def getProjectType():
     while True:
-        projectType = input("Which project are you building:\nFPKX: 1 \nWHUD: 2\n")
+        projectType = input("Which project are you building:\nFPKM: 0\nFPKE: 1 \nWHUD: 2\n")
         if(projectType.isdigit):
             if(int(projectType) > 0 and int(projectType) < 3):
                 return int(projectType)
@@ -84,15 +85,18 @@ def compare_lines(line1,line2,line3,line4):
                 exit()
 
 # Function to build AC/GC folders
-def build(build_batch_file,build_folder,ACGC):
+def build(build_batch_file,build_folder,ACGC,proj):
     log(f"🟢 {time.strftime('%X')} Running {ACGC} batch file:" + build_batch_file)
     os.chdir(build_folder)
     # subprocess.run([build_batch_file + ".bat"])
-
-    # Run the batch file in a separate subprocess, while printing log in current terminal
-    process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
-    # Wait for the process to finish and simulate an Enter key press
-    stdout,stderr = process.communicate(input='\n')
+    if proj==0:
+        process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
+        process.communicate(input='VW')
+    else:
+        # Run the batch file in a separate subprocess, while printing log in current terminal
+        process = subprocess.Popen([build_batch_file + ".bat"], stderr=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
+        # Wait for the process to finish and simulate an Enter key press
+        stdout,stderr = process.communicate(input='\n')
     
     return
 
@@ -111,7 +115,7 @@ def log(log_data):
         f.write(data_to_write + "\n")
 
 def getPrgSym(build_folder, projectType):
-    if projectType == FPKX:
+    if projectType == FPKM or projectType == FPKM:
         prgFolder = os.path.join(os.getcwd(),build_folder, "tool", "integration", "tool", "deliver", "core")
         if os.path.exists(prgFolder):
             os.chdir(prgFolder)
@@ -197,11 +201,16 @@ if(choose_sequence() == "AC"): # AC build first
 
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
-    if(projectType == FPKX): 
+    if(projectType == FPKM): 
         log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
-        getPrgSym(build_folder_AC, FPKX)
+        getPrgSym(build_folder_AC, FPKM)
         log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
-        getPrgSym(build_folder_GC, FPKX)
+        getPrgSym(build_folder_GC, FPKM)
+    elif(projectType == FPKE): 
+        log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
+        getPrgSym(build_folder_AC, FPKE)
+        log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
+        getPrgSym(build_folder_GC, FPKE)
     elif(projectType == WHUD):
         log(f"🟢 {time.strftime('%X')} AC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_AC, WHUD)
@@ -240,11 +249,16 @@ else: #GC build first
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
     
-    if(projectType == FPKX): 
+    if(projectType == FPKM): 
         log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
-        getPrgSym(build_folder_AC, FPKX)
+        getPrgSym(build_folder_AC, FPKM)
         log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
-        getPrgSym(build_folder_GC, FPKX)
+        getPrgSym(build_folder_GC, FPKM)
+    elif(projectType == FPKE): 
+        log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
+        getPrgSym(build_folder_AC, FPKE)
+        log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
+        getPrgSym(build_folder_GC, FPKE)
     elif(projectType == WHUD):
         log(f"🟢 {time.strftime('%X')} AC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_AC, WHUD)
