@@ -50,6 +50,16 @@ def find_line(file_path):
                     return line.strip()
     return None
 
+def continueSync():
+        while True:
+            continue_sync = input(f"⏩ {time.strftime('%X')} Do you still want to proceed with sync? (y/n): ").upper()
+            if continue_sync == "Y":
+                break
+            elif continue_sync == "N":
+                log(f"🟢 {time.strftime('%X')} Script finished")
+                input("⏩ Press Enter to continue...")
+                exit()
+
 # Function to compare lines between AC and GC folder
 def compare_lines(line1,line2,line3,line4):
     if line1 is None:
@@ -65,6 +75,7 @@ def compare_lines(line1,line2,line3,line4):
         log(f"❌ {file_AC}: {line1}")
         log(f"❌ {file_GC}: {line2} \n")
         time.sleep(2)
+        continueSync()
         log(f"🟢 {time.strftime('%X')} Proceeding with ICOM build syncing...")
         time.sleep(5)
         return
@@ -73,19 +84,13 @@ def compare_lines(line1,line2,line3,line4):
         log(f"❌ {file_AC_2}: {line3}")
         log(f"❌ {file_GC_2}: {line4} \n")
         time.sleep(2)
+        continueSync()
         log(f"🟢 {time.strftime('%X')} Proceeding with ICOM build syncing...")
         time.sleep(5)
         return() 
     else:
         log(f"🟢 {time.strftime('%X')} Your folders are synced. Congratulations")
-        while True:
-            continue_sync = input(f"⏩ {time.strftime('%X')} Do you still want to proceed with sync? (y/n): ").upper()
-            if continue_sync == "Y":
-                break
-            elif continue_sync == "N":
-                log(f"🟢 {time.strftime('%X')} Script finished")
-                input("⏩ Press Enter to continue...")
-                exit()
+        continueSync()
 
 # Function to build AC/GC folders
 def build(build_batch_file,build_folder,ACGC,projectType):
