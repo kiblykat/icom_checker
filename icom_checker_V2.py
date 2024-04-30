@@ -10,11 +10,14 @@ import time
 FPKM = 0
 FPKE = 1 
 WHUD = 2
+
+#global variables
+fpkmBrand = ""
+
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = DEFINING FUNCTIONS  = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
-#global variables
 main_directory = os.getcwd() 
 log_file = "logFile.txt"
 os.chdir(main_directory)
@@ -76,10 +79,10 @@ def compare_lines(line1,line2,line3,line4):
     else:
         log(f"🟢 {time.strftime('%X')} Your folders are synced. Congratulations")
         while True:
-            continue_sync = input(f"⏩ {time.strftime('%X')} Do you still want to proceed with sync? (y/n): ").lower()
-            if continue_sync == "y":
+            continue_sync = input(f"⏩ {time.strftime('%X')} Do you still want to proceed with sync? (y/n): ").upper()
+            if continue_sync == "Y":
                 break
-            elif continue_sync == "n":
+            elif continue_sync == "N":
                 log(f"🟢 {time.strftime('%X')} Script finished")
                 input("⏩ Press Enter to continue...")
                 exit()
@@ -115,13 +118,14 @@ def log(log_data):
         f.write(data_to_write + "\n")
 
 def getPrgSym(build_folder, projectType):
-    if projectType == FPKM or projectType == FPKM:
+    if projectType == FPKM or projectType == FPKE:
         prgFolder = os.path.join(os.getcwd(),build_folder, "tool", "integration", "tool", "deliver", "core")
         if os.path.exists(prgFolder):
             os.chdir(prgFolder)
             print(os.getcwd())
             getPrgProcess = subprocess.Popen([os.path.join(prgFolder, "get_prg.bat")],stdin=subprocess.PIPE, text=True)
-            stdout,stderr = getPrgProcess.communicate(input='ALL \n')
+            if projectType == FPKM:
+                stdout,stderr = getPrgProcess.communicate(input=f'{fpkmBrand} \n')
             subprocess.run(os.path.join(prgFolder, "get_sym.bat"))
     elif projectType == WHUD:
         prgFolder = os.path.join(os.getcwd(),build_folder,"prv", "tool", "_GEN")
@@ -132,6 +136,13 @@ def getPrgSym(build_folder, projectType):
             subprocess.run(os.path.join(prgFolder, "__changeRSA_PubKey.bat"))
             subprocess.run(os.path.join(prgFolder, "__Gen_ALL.bat"))
     
+def getFpkmBrand():
+    while True:
+        fpkmBrand = input("Enter brand (VW, AU, SE, or ALL): ").upper()
+        if(fpkmBrand == "VW" or fpkmBrand == "AU" or fpkmBrand == "SE" or fpkmBrand == "ALL"):
+            return fpkmBrand
+        log("🔴 Please enter a valid brand")
+
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = START OF CODE FLOW  = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -139,13 +150,7 @@ def getPrgSym(build_folder, projectType):
 
 # Start log file
 log(f"🟢 Script started at {time.strftime('%x %X')}  \n")
-#Prompt if building WHUD or FPKX
-projectType = getProjectType()
-if projectType==FPKM:
-    while True:
-        variant = input("⏩ Select Build variant to build\n-------------------------------------------------------------\n  1    -- for FPKM 24S1 (GEN1)\n  2    -- for FPKM Seamless (GEN2)\n").upper()
-        if(variant == '1' or variant == '2'):
-            break
+
 
 # Prompt user for AC and GC folders
 build_folder_AC = select_entry("⏩ Choose build folder for AC: ").upper()
@@ -170,6 +175,15 @@ line4 = find_line(file_GC_2)
 
 # Compare lines
 compare_lines(line1,line2,line3,line4)
+
+#Prompt if building WHUD or FPKX
+projectType = getProjectType()
+if projectType==FPKM:
+    while True:
+        variant = input("⏩ Select Build variant to build\n-------------------------------------------------------------\n  1    -- for FPKM 24S1 (GEN1)\n  2    -- for FPKM Seamless (GEN2)\n").upper()
+        if(variant == '1' or variant == '2'):
+            getFpkmBrand()
+            break
 
 # Prompt user for build variants
 os.chdir(main_directory + "/AC")
