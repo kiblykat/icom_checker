@@ -32,7 +32,7 @@ def getProjectType():
                 return int(projectType)
         print("Enter a valid option")
 # Function to prompt user for folder selection
-def select_entry(prompt_message):
+def selectEntry(prompt_message):
     while True:
         folder_path = input(prompt_message)
         if os.path.exists(os.path.join(os.getcwd(), folder_path)) or os.path.exists(os.path.join(os.getcwd(), folder_path)+".bat") :
@@ -42,7 +42,7 @@ def select_entry(prompt_message):
 
 
 # Function to find line containing search word
-def find_line(file_path):
+def findLine(file_path):
     if(os.path.exists(file_path)):
         with open(file_path, "r") as file:
             for line in file:
@@ -61,7 +61,7 @@ def continueSync():
                 exit()
 
 # Function to compare lines between AC and GC folder
-def compare_lines(line1,line2,line3,line4):
+def compareLines(line1,line2,line3,line4):
     if line1 is None:
         log(f"❌ {time.strftime('%X')} INTERFACEID not found in " + file_AC)
     if line2 is None:
@@ -108,7 +108,7 @@ def build(build_batch_file,build_folder,ACGC,projectType):
     
     return
 
-def choose_sequence():
+def chooseSequence():
     while True:
         first_folder = input("⏩ Choose which folder to build first: ").upper()
         if (first_folder == "AC" or first_folder == "GC"):
@@ -158,8 +158,8 @@ log(f"🟢 Script started at {time.strftime('%x %X')}  \n")
 
 
 # Prompt user for AC and GC folders
-build_folder_AC = select_entry("⏩ Choose build folder for AC: ").upper()
-build_folder_GC = select_entry("⏩ Choose build folder for GC: ").upper()
+build_folder_AC = selectEntry("⏩ Choose build folder for AC: ").upper()
+build_folder_GC = selectEntry("⏩ Choose build folder for GC: ").upper()
 
 # Set file paths for icom_export.sdh
 file_AC = os.path.join(build_folder_AC, "core", "pkg", "icom", "icom_export.sdh")
@@ -172,14 +172,14 @@ file_GC_2 = os.path.join(build_folder_GC, "core", "pkg", "icom", "icom_export.sd
 search_word = "INTERFACEID"
 
 # Find lines containing search word in AC and GC files
-line1 = find_line(file_AC)
-line2 = find_line(file_GC)
+line1 = findLine(file_AC)
+line2 = findLine(file_GC)
 
-line3 = find_line(file_AC_2)
-line4 = find_line(file_GC_2)
+line3 = findLine(file_AC_2)
+line4 = findLine(file_GC_2)
 
 # Compare lines
-compare_lines(line1,line2,line3,line4)
+compareLines(line1,line2,line3,line4)
 
 #Prompt if building WHUD or FPKX
 projectType = getProjectType()
@@ -192,12 +192,12 @@ if projectType==FPKM:
 
 # Prompt user for build variants
 os.chdir(main_directory + "/AC")
-build_AC_batch = select_entry("⏩ Choose build variant for AC: ")
+build_AC_batch = selectEntry("⏩ Choose build variant for AC: ")
 os.chdir(main_directory + "/GC")
-build_GC_batch = select_entry("⏩ Choose build variant for GC: ")
+build_GC_batch = selectEntry("⏩ Choose build variant for GC: ")
 
 # Choose which folder to build first
-if(choose_sequence() == "AC"): # AC build first
+if(chooseSequence() == "AC"): # AC build first
     # Run AC build
     os.chdir(main_directory)
     build(build_AC_batch,build_folder_AC, "AC",projectType)
