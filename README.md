@@ -23,6 +23,7 @@ There are 3 main workflow 'hassles' that are present with the current process of
 This tool helps to reduce manual labour and reduce the propensity to make any errors within ICOM syncing process by automating the whole process from start to finish. This allows for the script to be run overnight.
 ### 2.1 Overview
 The tool aims to achieve the following:
+
     1. Eliminate manual labour of shifting and copying over files from one project folder to another is automated
     2. Eliminate the need for user to be present after each build process, by asking all input at the start of the whole process.
     3. Allow for whole ICOM sync process to through a few inputs without further user interaction, allowing the ability to run it overnight.
