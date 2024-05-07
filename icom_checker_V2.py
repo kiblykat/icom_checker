@@ -26,13 +26,13 @@ with open(log_file, "a") as f:
 
 def getProjectType():
     while True:
-        projectType = input("Which project are you building:\nFPKM: 0\nFPKE: 1 \nWHUD: 2\n")
+        projectType = input(f"🟢 {time.strftime('%X')} Which project are you building:\nFPKM: 0\nFPKE: 1 \nWHUD: 2\n")
         if(projectType.isdigit):
             if(int(projectType) >= 0 and int(projectType) < 3):
                 return int(projectType)
         print("Enter a valid option")
 # Function to prompt user for folder selection
-def selectEntry(prompt_message):
+def select_entry(prompt_message):
     while True:
         folder_path = input(prompt_message)
         if os.path.exists(os.path.join(os.getcwd(), folder_path)) or os.path.exists(os.path.join(os.getcwd(), folder_path)+".bat") :
@@ -40,9 +40,8 @@ def selectEntry(prompt_message):
         else:
             log(f"🔴 {time.strftime('%X')} File/Folder not found. Please check spelling.")
 
-
 # Function to find line containing search word
-def findLine(file_path):
+def find_line(file_path):
     if(os.path.exists(file_path)):
         with open(file_path, "r") as file:
             for line in file:
@@ -56,12 +55,12 @@ def continueSync():
             if continue_sync == "Y":
                 break
             elif continue_sync == "N":
-                log(f"🟢 {time.strftime('%X')} Script finished")
+                log(f"🟢 {time.strftime('%x %X')} Script finished")
                 input("⏩ Press Enter to continue...")
                 exit()
 
 # Function to compare lines between AC and GC folder
-def compareLines(line1,line2,line3,line4):
+def compare_lines(line1,line2,line3,line4):
     if line1 is None:
         log(f"❌ {time.strftime('%X')} INTERFACEID not found in " + file_AC)
     if line2 is None:
@@ -80,7 +79,7 @@ def compareLines(line1,line2,line3,line4):
         time.sleep(5)
         return
     elif line3 != line4:
-        log("🔴 Your folders are not synced \n")
+        log(f"{time.strftime('%X')} 🔴 Your folders are not synced \n")
         log(f"❌ {file_AC_2}: {line3}")
         log(f"❌ {file_GC_2}: {line4} \n")
         time.sleep(2)
@@ -108,12 +107,12 @@ def build(build_batch_file,build_folder,ACGC,projectType):
     
     return
 
-def chooseSequence():
+def choose_sequence():
     while True:
         first_folder = input("⏩ Choose which folder to build first: ").upper()
         if (first_folder == "AC" or first_folder == "GC"):
             return first_folder
-        log("🔴 Please input a valid folder")
+        log(f"🔴 {time.strftime('%X')} Please input a valid folder")
 
 def log(log_data):
     print(log_data)
@@ -143,10 +142,10 @@ def getPrgSym(build_folder, projectType):
     
 def getFpkmBrand():
     while True:
-        fpkmBrand = input("Enter brand (VW, AU, SE, or ALL): ").upper()
+        fpkmBrand = input(f"{time.strftime('%X')} Enter brand (VW, AU, SE, or ALL): ").upper()
         if(fpkmBrand == "VW" or fpkmBrand == "AU" or fpkmBrand == "SE" or fpkmBrand == "ALL"):
             return fpkmBrand
-        log("🔴 Please enter a valid brand")
+        log(f"🔴 {time.strftime('%X')} Please enter a valid brand")
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = START OF CODE FLOW  = = = = = = = = = = = = = = = 
@@ -154,12 +153,12 @@ def getFpkmBrand():
 
 
 # Start log file
-log(f"🟢 Script started at {time.strftime('%x %X')}  \n")
+log(f"🟢 {time.strftime('%x %X')} Script started \n")
 
 
 # Prompt user for AC and GC folders
-build_folder_AC = selectEntry("⏩ Choose build folder for AC: ").upper()
-build_folder_GC = selectEntry("⏩ Choose build folder for GC: ").upper()
+build_folder_AC = select_entry(f"⏩ {time.strftime('%X')} Choose build folder for AC: ").upper()
+build_folder_GC = select_entry(f"⏩ {time.strftime('%X')} Choose build folder for GC: ").upper()
 
 # Set file paths for icom_export.sdh
 file_AC = os.path.join(build_folder_AC, "core", "pkg", "icom", "icom_export.sdh")
@@ -172,14 +171,14 @@ file_GC_2 = os.path.join(build_folder_GC, "core", "pkg", "icom", "icom_export.sd
 search_word = "INTERFACEID"
 
 # Find lines containing search word in AC and GC files
-line1 = findLine(file_AC)
-line2 = findLine(file_GC)
+line1 = find_line(file_AC)
+line2 = find_line(file_GC)
 
-line3 = findLine(file_AC_2)
-line4 = findLine(file_GC_2)
+line3 = find_line(file_AC_2)
+line4 = find_line(file_GC_2)
 
 # Compare lines
-compareLines(line1,line2,line3,line4)
+compare_lines(line1,line2,line3,line4)
 
 #Prompt if building WHUD or FPKX
 projectType = getProjectType()
@@ -192,12 +191,12 @@ if projectType==FPKM:
 
 # Prompt user for build variants
 os.chdir(main_directory + "/AC")
-build_AC_batch = selectEntry("⏩ Choose build variant for AC: ")
+build_AC_batch = select_entry("⏩ Choose build variant for AC: ")
 os.chdir(main_directory + "/GC")
-build_GC_batch = selectEntry("⏩ Choose build variant for GC: ")
+build_GC_batch = select_entry("⏩ Choose build variant for GC: ")
 
 # Choose which folder to build first
-if(chooseSequence() == "AC"): # AC build first
+if(choose_sequence() == "AC"): # AC build first
     # Run AC build
     os.chdir(main_directory)
     build(build_AC_batch,build_folder_AC, "AC",projectType)
@@ -242,7 +241,7 @@ if(chooseSequence() == "AC"): # AC build first
         getPrgSym(build_folder_GC, WHUD)
 
     # End log file
-    log(f"🟢 Script finished at {time.strftime('%x %X')}\n")
+    log(f"🟢 {time.strftime('%x %X')} Script finished \n")
     input("Press Enter to continue...")
 else: #GC build first
     os.chdir(main_directory)
@@ -290,5 +289,5 @@ else: #GC build first
         getPrgSym(build_folder_GC, WHUD)
 
     # End log file
-    log(f"🟢 Script finished at {time.strftime('%x %X')}\n")
+    log(f"🟢 {time.strftime('%x %X')} Script finished \n")
     input("Press Enter to continue...")
