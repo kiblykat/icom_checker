@@ -26,7 +26,7 @@ with open(log_file, "a") as f:
 
 def getProjectType():
     while True:
-        projectType = input(f"🟢 {time.strftime('%X')} Which project are you building:\nFPKM: 0\nFPKE: 1 \nWHUD: 2\n")
+        projectType = input(f"  {time.strftime('%X')} Which project are you building:\nFPKM: 0\nFPKE: 1 \nWHUD: 2\n")
         if(projectType.isdigit):
             if(int(projectType) >= 0 and int(projectType) < 3):
                 return int(projectType)
@@ -38,7 +38,7 @@ def select_entry(prompt_message):
         if os.path.exists(os.path.join(os.getcwd(), folder_path)) or os.path.exists(os.path.join(os.getcwd(), folder_path)+".bat") :
             return folder_path
         else:
-            log(f"🔴 {time.strftime('%X')} File/Folder not found. Please check spelling.")
+            log(f"  {time.strftime('%X')} File/Folder not found. Please check spelling.")
 
 # Function to find line containing search word
 def find_line(file_path):
@@ -51,49 +51,49 @@ def find_line(file_path):
 
 def continueSync():
         while True:
-            continue_sync = input(f"⏩ {time.strftime('%X')} Do you still want to proceed with sync? (y/n): ").upper()
+            continue_sync = input(f"  {time.strftime('%X')} Do you still want to proceed with sync? (y/n): ").upper()
             if continue_sync == "Y":
                 break
             elif continue_sync == "N":
-                log(f"🟢 {time.strftime('%x %X')} Script finished")
-                input("⏩ Press Enter to continue...")
+                log(f"  {time.strftime('%x %X')} Script finished")
+                input("  Press Enter to continue...")
                 exit()
 
 # Function to compare lines between AC and GC folder
 def compare_lines(line1,line2,line3,line4):
     if line1 is None:
-        log(f"❌ {time.strftime('%X')} INTERFACEID not found in " + file_AC)
+        log(f"  {time.strftime('%X')} INTERFACEID not found in " + file_AC)
     if line2 is None:
-        log(f"❌ {time.strftime('%X')} INTERFACEID not found in " + file_GC)
+        log(f"  {time.strftime('%X')} INTERFACEID not found in " + file_GC)
     if line3 is None:
-        log(f"❌ {time.strftime('%X')} INTERFACEID not found in " + file_AC_2)
+        log(f"  {time.strftime('%X')} INTERFACEID not found in " + file_AC_2)
     if line4 is None:
-        log(f"❌ {time.strftime('%X')} INTERFACEID not found in " + file_GC_2)
+        log(f"  {time.strftime('%X')} INTERFACEID not found in " + file_GC_2)
     if line1 != line2:
-        log(f"🔴 {time.strftime('%X')} Your folders are not synced \n")
-        log(f"❌ {file_AC}: {line1}")
-        log(f"❌ {file_GC}: {line2} \n")
+        log(f"  {time.strftime('%X')} Your folders are not synced \n")
+        log(f"  {file_AC}: {line1}")
+        log(f"  {file_GC}: {line2} \n")
         time.sleep(2)
         continueSync()
-        log(f"🟢 {time.strftime('%X')} Proceeding with ICOM build syncing...")
+        log(f"  {time.strftime('%X')} Proceeding with ICOM build syncing...")
         time.sleep(5)
         return
     elif line3 != line4:
-        log(f"{time.strftime('%X')} 🔴 Your folders are not synced \n")
-        log(f"❌ {file_AC_2}: {line3}")
-        log(f"❌ {file_GC_2}: {line4} \n")
+        log(f"{time.strftime('%X')}   Your folders are not synced \n")
+        log(f"  {file_AC_2}: {line3}")
+        log(f"  {file_GC_2}: {line4} \n")
         time.sleep(2)
         continueSync()
-        log(f"🟢 {time.strftime('%X')} Proceeding with ICOM build syncing...")
+        log(f"  {time.strftime('%X')} Proceeding with ICOM build syncing...")
         time.sleep(5)
         return() 
     else:
-        log(f"🟢 {time.strftime('%X')} Your folders are synced. Congratulations")
+        log(f"  {time.strftime('%X')} Your folders are synced. Congratulations")
         continueSync()
 
 # Function to build AC/GC folders
 def build(build_batch_file,build_folder,ACGC,projectType):
-    log(f"🟢 {time.strftime('%X')} Running {ACGC} batch file:" + build_batch_file)
+    log(f"  {time.strftime('%X')} Running {ACGC} batch file:" + build_batch_file)
     os.chdir(build_folder)
     # subprocess.run([build_batch_file + ".bat"])
     if projectType==0 and ACGC=="GC":
@@ -109,10 +109,10 @@ def build(build_batch_file,build_folder,ACGC,projectType):
 
 def choose_sequence():
     while True:
-        first_folder = input("⏩ Choose which folder to build first: ").upper()
+        first_folder = input("  Choose which folder to build first: ").upper()
         if (first_folder == "AC" or first_folder == "GC"):
             return first_folder
-        log(f"🔴 {time.strftime('%X')} Please input a valid folder")
+        log(f"  {time.strftime('%X')} Please input a valid folder")
 
 def log(log_data):
     print(log_data)
@@ -145,7 +145,7 @@ def getFpkmBrand():
         fpkmBrand = input(f"{time.strftime('%X')} Enter brand (VW, AU, SE, or ALL): ").upper()
         if(fpkmBrand == "VW" or fpkmBrand == "AU" or fpkmBrand == "SE" or fpkmBrand == "ALL"):
             return fpkmBrand
-        log(f"🔴 {time.strftime('%X')} Please enter a valid brand")
+        log(f"  {time.strftime('%X')} Please enter a valid brand")
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 # = = = = = = = = = = = = = = = START OF CODE FLOW  = = = = = = = = = = = = = = = 
@@ -153,12 +153,12 @@ def getFpkmBrand():
 
 
 # Start log file
-log(f"🟢 {time.strftime('%x %X')} Script started \n")
+log(f"  {time.strftime('%x %X')} Script started \n")
 
 
 # Prompt user for AC and GC folders
-build_folder_AC = select_entry(f"⏩ {time.strftime('%X')} Choose build folder for AC: ").upper()
-build_folder_GC = select_entry(f"⏩ {time.strftime('%X')} Choose build folder for GC: ").upper()
+build_folder_AC = select_entry(f"  {time.strftime('%X')} Choose build folder for AC: ").upper()
+build_folder_GC = select_entry(f"  {time.strftime('%X')} Choose build folder for GC: ").upper()
 
 # Set file paths for icom_export.sdh
 file_AC = os.path.join(build_folder_AC, "core", "pkg", "icom", "icom_export.sdh")
@@ -184,16 +184,16 @@ compare_lines(line1,line2,line3,line4)
 projectType = getProjectType()
 if projectType==FPKM:
     while True:
-        variant = input("⏩ Select Build variant to build\n-------------------------------------------------------------\n  1    -- for FPKM 24S1 (GEN1)\n  2    -- for FPKM Seamless (GEN2)\n").upper()
+        variant = input("  Select Build variant to build\n-------------------------------------------------------------\n  1    -- for FPKM 24S1 (GEN1)\n  2    -- for FPKM Seamless (GEN2)\n").upper()
         if(variant == '1' or variant == '2'):
             getFpkmBrand()
             break
 
 # Prompt user for build variants
 os.chdir(main_directory + "/AC")
-build_AC_batch = select_entry("⏩ Choose build variant for AC: ")
+build_AC_batch = select_entry("  Choose build variant for AC: ")
 os.chdir(main_directory + "/GC")
-build_GC_batch = select_entry("⏩ Choose build variant for GC: ")
+build_GC_batch = select_entry("  Choose build variant for GC: ")
 
 # Choose which folder to build first
 if(choose_sequence() == "AC"): # AC build first
@@ -202,7 +202,7 @@ if(choose_sequence() == "AC"): # AC build first
     build(build_AC_batch,build_folder_AC, "AC",projectType)
 
     # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
-    log(f"🟢 {time.strftime('%X')} Copying files from AC to GC")
+    log(f"  {time.strftime('%X')} Copying files from AC to GC")
     time.sleep(2) #for debugging
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
@@ -213,7 +213,7 @@ if(choose_sequence() == "AC"): # AC build first
     build(build_GC_batch,build_folder_GC,"GC",projectType)
 
     # Copy files from GC to AC folder
-    log(f"🟢 {time.strftime('%X')} Copying files from GC to AC")
+    log(f"  {time.strftime('%X')} Copying files from GC to AC")
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "pkg"),
                     os.path.join(build_folder_AC, "core", "pkg"),
@@ -225,23 +225,23 @@ if(choose_sequence() == "AC"): # AC build first
     # Run get_prg and get_sym for AC
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
     if(projectType == FPKM): 
-        log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
+        log(f"  {time.strftime('%X')} AC: Running get_prg and get_sym")
         getPrgSym(build_folder_AC, FPKM)
-        log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
+        log(f"  {time.strftime('%X')} GC: Running get_prg and get_sym")
         getPrgSym(build_folder_GC, FPKM)
     elif(projectType == FPKE): 
-        log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
+        log(f"  {time.strftime('%X')} AC: Running get_prg and get_sym")
         getPrgSym(build_folder_AC, FPKE)
-        log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
+        log(f"  {time.strftime('%X')} GC: Running get_prg and get_sym")
         getPrgSym(build_folder_GC, FPKE)
     elif(projectType == WHUD):
-        log(f"🟢 {time.strftime('%X')} AC: Running __changeRSA_PubKey and __Gen_ALL")
+        log(f"  {time.strftime('%X')} AC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_AC, WHUD)
-        log(f"🟢 {time.strftime('%X')} GC: Running __changeRSA_PubKey and __Gen_ALL")
+        log(f"  {time.strftime('%X')} GC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_GC, WHUD)
 
     # End log file
-    log(f"🟢 {time.strftime('%x %X')} Script finished \n")
+    log(f"  {time.strftime('%x %X')} Script finished \n")
     input("Press Enter to continue...")
 else: #GC build first
     os.chdir(main_directory)
@@ -249,7 +249,7 @@ else: #GC build first
     build(build_GC_batch,build_folder_GC,"GC",projectType)
 
     # Copy files from GC to AC folder
-    log(f"🟢 {time.strftime('%X')} Copying files from GC to AC")
+    log(f"  {time.strftime('%X')} Copying files from GC to AC")
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(build_folder_GC, "adapt", "gen", "tofac", "core", "pkg"),
                     os.path.join(build_folder_AC, "core", "pkg"),
@@ -259,7 +259,7 @@ else: #GC build first
     build(build_AC_batch,build_folder_AC,"AC",projectType)
 
     # Copy files from AC to GC folder (dirs_exist_ok true: if directory is alr inside, overwrite)
-    log(f"🟢 {time.strftime('%X')} Copying files from AC to GC")
+    log(f"  {time.strftime('%X')} Copying files from AC to GC")
     time.sleep(2) #for debugging
     os.chdir(main_directory) # return to parent dir
     shutil.copytree(os.path.join(os.getcwd(), build_folder_AC, "adapt", "gen", "ToFGC", "core", "pkg"),
@@ -273,21 +273,21 @@ else: #GC build first
     os.chdir(os.path.dirname(os.getcwd())) # return to parent dir
     
     if(projectType == FPKM): 
-        log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
+        log(f"  {time.strftime('%X')} AC: Running get_prg and get_sym")
         getPrgSym(build_folder_AC, FPKM)
-        log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
+        log(f"  {time.strftime('%X')} GC: Running get_prg and get_sym")
         getPrgSym(build_folder_GC, FPKM)
     elif(projectType == FPKE): 
-        log(f"🟢 {time.strftime('%X')} AC: Running get_prg and get_sym")
+        log(f"  {time.strftime('%X')} AC: Running get_prg and get_sym")
         getPrgSym(build_folder_AC, FPKE)
-        log(f"🟢 {time.strftime('%X')} GC: Running get_prg and get_sym")
+        log(f"  {time.strftime('%X')} GC: Running get_prg and get_sym")
         getPrgSym(build_folder_GC, FPKE)
     elif(projectType == WHUD):
-        log(f"🟢 {time.strftime('%X')} AC: Running __changeRSA_PubKey and __Gen_ALL")
+        log(f"  {time.strftime('%X')} AC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_AC, WHUD)
-        log(f"🟢 {time.strftime('%X')} GC: Running __changeRSA_PubKey and __Gen_ALL")
+        log(f"  {time.strftime('%X')} GC: Running __changeRSA_PubKey and __Gen_ALL")
         getPrgSym(build_folder_GC, WHUD)
 
     # End log file
-    log(f"🟢 {time.strftime('%x %X')} Script finished \n")
+    log(f"  {time.strftime('%x %X')} Script finished \n")
     input("Press Enter to continue...")
