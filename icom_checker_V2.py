@@ -142,7 +142,7 @@ def getPrgSym(build_folder, projectType):
     
 def getFpkmBrand():
     while True:
-        fpkmBrand = input(f"{time.strftime('%X')} Enter brand (VW, AU, SE, or ALL): ").upper()
+        fpkmBrand = input("{} Enter brand (VW, AU, SE, or ALL): ".format(time.strftime('%X'))).upper()
         if(fpkmBrand == "VW" or fpkmBrand == "AU" or fpkmBrand == "SE" or fpkmBrand == "ALL"):
             return fpkmBrand
         log("{} Please enter a valid brand".format(time.strftime('%X')))
