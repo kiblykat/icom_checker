@@ -109,7 +109,7 @@ def build(build_batch_file,build_folder,ACGC,projectType):
 
 def choose_sequence():
     while True:
-        first_folder = input("Choose which folder to build first: ").upper()
+        first_folder = input("Choose which folder to build first(AC/GC): ").upper()
         if (first_folder == "AC" or first_folder == "GC"):
             return first_folder
         log("{} Please input a valid folder".format(time.strftime('%X')))
@@ -190,9 +190,9 @@ if projectType==FPKM:
             break
 
 # Prompt user for build variants
-os.chdir(main_directory + "/AC")
+os.chdir(os.path.join(main_directory, build_folder_AC))
 build_AC_batch = select_entry("Choose build variant for AC: ")
-os.chdir(main_directory + "/GC")
+os.chdir(os.path.join(main_directory, build_folder_GC))
 build_GC_batch = select_entry("Choose build variant for GC: ")
 
 # Choose which folder to build first
