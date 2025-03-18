@@ -1,10 +1,10 @@
 # ICOM Sync Tool
 
-    • Background
-        ◦ Motivation
-    • Tool
-        ◦ Overview
-        ◦ How it works
+1. Background
+    - Motivation
+2. Tool
+    - Overview
+    - How it works
 
 ## 1. Background
 
